@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="sv">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Jakob Nylin Nilsson - Systembibliotekarie och utvecklare</title>
+        <style>
+            /* Grundinställningar*/
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                line-height: 1.6;
+                color: #e0e0e0;
+                background-color: #121212;
+                max-width: 700px;
+                margin: 0 auto;
+                padding: 40px 20px;
+            }
+
+            /* Header */
+            header {
+                margin-bottom: 50px;
+                border-bottom: 1px solid #2d2d2d;
+                padding-bottom: 30px;
+            }
+
+            header h1 {
+                font-size: 2.2rem;
+                color: #ffffff;
+                margin-bottom: 10px;
+            }
+
+            header p {
+                font-size: 1.1rem;
+                color: #a0a0a0;
+                margin: 0;
+            }
+
+            /* Rubriker */
+            h2 {
+                color: #ffffff;
+                font-size: 1.5rem;
+                margin-top: 40px;
+                margin-bottom: 20px;
+            }
+
+            /* Gemensam bas för artiklar */
+            article {
+                margin-bottom: 25px;
+            }
+
+            /* Specifik styling för projektkort */
+            .project-card {
+                background-color: #1e1e1e;
+                padding: 20px;
+                border-radius: 6px;
+                border: 1px solid #2d2d2d;
+                transition: transform 0.2s ease, border-color 0.2s ease;
+            }
+
+            /* Subtil mikrointeraktion när man hovrar över ett projekt */
+            .project-card:hover {
+                transform: translateY(-2px);
+                border-color: #4a90e2;
+            }
+
+            .project-card h3 {
+                color: #4a90e2; /* Diskret blå accentfärg */
+                margin-top: 0;
+                margin-bottom: 10px;
+                font-size: 1.25rem;
+            }
+
+            .project-card p:last-child {
+                margin-bottom: 0;
+            }
+
+            /* Styling för den klassiska CV-delen */
+            .cv-item {
+                margin-bottom: 30px;
+            }
+
+            .cv-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: baseline;
+            }
+
+            .cv-header strong {
+                color: #ffffff;
+                font-size: 1.1rem;
+            }
+
+            .cv-timeline {
+                color: #707070;
+                font-size: 0.9rem;
+            }
+
+            .cv-company {
+                color: #a0a0a0;
+                font-size: 0.95rem;
+                margin-top: 2px;
+            }
+
+            .cv-item p {
+                margin-top: 8px;
+                margin-bottom: 0;
+            }
+
+            /* Länkar */
+            a {
+                color: #4a90e2;
+                text-decoration: none;
+                font-weight: 500;
+            }
+
+            a:hover {
+                text-decoration: underline;
+            }
+
+            /* Footer */
+            footer {
+                margin-top: 60px;
+                padding-top: 20px;
+                border-top: 1px solid #2d2d2d;
+                font-size: 0.85rem;
+                color: #707070;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1>Jakob Nylin Nilsson</h1>
+            <p>Systembibliotekarie och utvecklare som bygger stabila integrationer, automatiserade flöden och robust systemarkitektur.</p>
+        </header>
+        <main>
+            <section>
+                <h2>Utvalda projekt</h2>
+                
+                <article class="project-card">
+                    <h3>Kurslittkoll</h3>
+                    <p>En öppen applikation för hantering och synkronisering av kurslitteratur. Utvecklad med fokus på ren kodstruktur och långsiktig förvaltningsbarhet. Projektet är släppt som öppen källkod.</p>
+                    <p><a href="https://gitlab.com/lnu-ub/kurslittkoll/" target="_blank">Visa källkod på GitLab &rarr;</a></p>
+                </article>
+
+                <article class="project-card">
+                    <h3>Keycloak (Identitetsmäklare)</h3>
+                    <p>Strategisk teknisk enabler för centraliserad autentisering och modern identitetshantering (IAM). Implementerad för att säkra systemövergångar, hantera OIDC-flöden och automatisera JIT-kontohantering, vilket avvecklat gamla, fragmenterade inloggningslösningar.</p>
+                </article>
+
+                <article class="project-card">
+                    <h3>Hovmästaren</h3>
+                    <p>Ett proaktivt övervaknings- och automatiseringsskript utvecklat i Bash för Linuxmiljö. Skriptet identifierar nätverksmättnad (SYN-RECV-anslutningar) under högtrafik och automatiserar återställningen av Apache-webbservrar för att garantera kontinuerlig systemresiliens och stabilitet.</p>
+                </article>
+            </section>
+
+            <section>
+                <h2>Erfarenhet i korthet</h2>
+                
+                <article class="cv-item">
+                    <div class="cv-header">
+                        <strong>Systembibliotekarie</strong>
+                        <span class="cv-timeline">2015 &ndash; Nuvarande</span>
+                    </div>
+                    <div class="cv-company">Linneuniversitetet</div>
+                    <p>Ansvarig för tekniska integrationer, metadataflöden och systemstabilitet i en komplex digital infrastruktur. Arbetar i gränslandet mellan utveckling (Linux, Ruby, PHP, Node.js) och informationsarkitektur.</p>
+                </article>
+                
+                <article class="cv-item">
+                    <div class="cv-header">
+                        <strong>Systemutvecklare / Konsult</strong>
+                        <span class="cv-timeline">2021 &ndash; Nuvarande</span>
+                    </div>
+                    <div class="cv-company">Eira-konsortiet (deltid)</div>
+                    <p>Strategiskt systemunderhåll, API-integrationer och optimering av gemensamma systemresurser.</p>
+                </article>
+            </section>
+        </main>
+        <footer>
+            <p>&copy; 2026 Jakob Nylin Nilsson. Byggd med ren HTML, CSS och JavaScript. Hostad på GitHub Pages.</p>            
+        </footer>
+    </body>
+</html>
