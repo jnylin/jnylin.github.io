@@ -58,9 +58,15 @@
             }
 
             /* Subtil mikrointeraktion när man hovrar över ett projekt */
-            .project-card:hover {
+            .project-card:hover,
+            .project-card:focus-within {
                 transform: translateY(-2px);
                 border-color: #4a90e2;
+            }
+
+            .project-card a:focus-visible {
+                outline: 2px solid #4a90e2;
+                outline-offset: 3px;
             }
 
             .project-card h3 {
@@ -90,8 +96,9 @@
                 font-size: 1.1rem;
             }
 
+            /* #949494 på #121212 ger ~6.2:1 kontrast (WCAG AA för liten text kräver 4.5:1) */
             .cv-timeline {
-                color: #707070;
+                color: #949494;
                 font-size: 0.9rem;
             }
 
@@ -104,6 +111,15 @@
             .cv-item p {
                 margin-top: 8px;
                 margin-bottom: 0;
+            }
+
+            .cv-item ul {
+                margin: 8px 0 0;
+                padding-left: 20px;
+            }
+
+            .cv-item li {
+                margin-bottom: 4px;
             }
 
             /* Länkar */
@@ -123,7 +139,8 @@
                 padding-top: 20px;
                 border-top: 1px solid #2d2d2d;
                 font-size: 0.85rem;
-                color: #707070;
+                /* #949494 på #121212 ger ~6.2:1 kontrast (tidigare #707070 gav ~3.8:1, under AA-gränsen) */
+                color: #949494;
                 text-align: center;
             }
         </style>
@@ -136,7 +153,7 @@
         <main>
             <section>
                 <h2>Utvalda projekt</h2>
-                
+
                 <article class="project-card">
                     <h3>Kurslittkoll</h3>
                     <p>En öppen applikation för hantering och synkronisering av kurslitteratur. Utvecklad med fokus på ren kodstruktur och långsiktig förvaltningsbarhet. Projektet är släppt som öppen källkod.</p>
@@ -145,8 +162,9 @@
 
                 <article class="project-card">
                     <h3>Keycloak (Identitetsmäklare &amp; strategisk möjliggörare)</h3>
-                    <p>Strategisk arkitekturlösning implementerad för att agera identitetsmäklare (Identity Broker) mellan IdP och externa leverantörer. /p>
-                    <p>Lösningen hanterar  komplexa OIDC-flöden (bland annat hantering av <code>aud</code> som array) och automatiserar JIT-kontohantering (Just-In-Time), vilket har avvecklat gamla fragmenterade inloggningslösningar och minimerat manuell administration.</p>
+                    <p>Strategisk arkitekturlösning implementerad för att agera identitetsmäklare (Identity Broker) mellan IdP och externa leverantörer.</p>
+                    <p>Lösningen hanterar komplexa OIDC-flöden (bland annat hantering av <code>aud</code> som array) och automatiserar JIT-kontohantering (Just-In-Time), vilket har avvecklat gamla fragmenterade inloggningslösningar och minimerat manuell administration.</p>
+                    <p><em>Intern lösning, källkod ej publik.</em></p>
                 </article>
 
                 <article class="project-card">
@@ -157,28 +175,35 @@
 
             <section>
                 <h2>Erfarenhet i korthet</h2>
-                
+
                 <article class="cv-item">
                     <div class="cv-header">
                         <strong>Systembibliotekarie</strong>
                         <span class="cv-timeline">2015 &ndash; Nuvarande</span>
                     </div>
-                    <div class="cv-company">Linneuniversitetet</div>
-                    <p>Ansvarig för tekniska integrationer, metadataflöden och systemstabilitet i en komplex digital infrastruktur. Arbetar i gränslandet mellan utveckling (Linux, Ruby, PHP, Node.js) och informationsarkitektur.</p>
+                    <div class="cv-company">Linnéuniversitetet</div>
+                    <ul>
+                        <li>Ansvarig för integrationsarkitektur mellan bibliotekets kärnsystem (Alma, FOLIO, VuFind, Primo) och identitetslager (Keycloak, Shibboleth, EZproxy).</li>
+                        <li>Designat och implementerat en LSP-agnostisk broker-tjänst i Node.js som abstraherar autentisering och användarhantering mot flera bibliotekssystem parallellt.</li>
+                        <li>Genomfört säkerhetshärdning (CSP, HMAC-baserad autentisering) för webbtjänster.</li>
+                        <li>Driver kontinuerligt tillgänglighetsarbete, inklusive automatiserad testning (Playwright/axe-core) mot externa leverantörsgränssnitt.</li>
+                    </ul>
                 </article>
-                
+
                 <article class="cv-item">
                     <div class="cv-header">
                         <strong>Konsult</strong>
                         <span class="cv-timeline">2021 &ndash; Nuvarande</span>
                     </div>
                     <div class="cv-company">Eira-konsortiet (deltid)</div>
-                    <p>Strategiskt databasunderhåll.</p>
+                    <ul>
+                        <li>Strategiskt databasunderhåll och teknisk rådgivning inom konsortiesamarbete.</li>
+                    </ul>
                 </article>
             </section>
         </main>
         <footer>
-            <p>&copy; 2026 Jakob Nylin Nilsson. Byggd med ren HTML, CSS och JavaScript. Hostad på GitHub Pages.</p>            
+            <p>&copy; 2026 Jakob Nylin Nilsson. Byggd med ren HTML, CSS och JavaScript. Hostad på GitHub Pages.</p>
         </footer>
     </body>
 </html>
