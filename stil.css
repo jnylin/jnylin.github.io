@@ -28,6 +28,11 @@ header p {
     margin: 0;
 }
 
+.header-actions {
+    display: flex;
+    justify-content: space-between;
+}
+
 /* Rubriker */
 h2 {
     color: #ffffff;
@@ -157,5 +162,37 @@ footer {
     .tech-stack {
         grid-template-columns: 1fr;
         gap: 10px;
+    }
+}
+
+@media print {
+    @page {
+        size: A4;
+        margin: 18mm;
+    }
+    
+    body {
+        background: white;
+        color: black;
+        max-width: none;
+        padding: 0;
+    }
+
+    .project-card {
+        border: 1px solid #ccc;
+        break-inside: avoid;
+    }
+
+    a {
+        color: black;
+        text-decoration: none;
+    }
+
+    footer {
+        display: none;
+    }
+
+    .print-button {
+        display: none;
     }
 }

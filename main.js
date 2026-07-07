@@ -14,3 +14,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     target.appendChild(link);
 });
+
+// Möjlighet till utskrift
+document
+    .getElementById("print-button")
+    ?.addEventListener("click", () => window.print());
