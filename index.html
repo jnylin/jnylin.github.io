@@ -3,18 +3,21 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; img-src 'self';">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; img-src 'self'; script-src 'self';">
         <title>Jakob Nylin Nilsson - Systembibliotekarie och utvecklare</title>
         <link href="stil.css" rel="stylesheet">
         <link rel="alternate" hreflang="sv" href="https://jnylin.github.io/index.html">
         <link rel="alternate" hreflang="en" href="https://jnylin.github.io/en.html">
         <link rel="alternate" hreflang="x-default" href="https://jnylin.github.io/index.html">
+        <script src="email.js" defer></script>
     </head>
     <body>
         <header>
             <h1>Jakob Nylin Nilsson</h1>
             <p>Systembibliotekarie som utvecklar integrationsplattformar, identitetslösningar och automatiserade flöden med fokus på långsiktig förvaltning.</p>
-            <p class="contact"><a href="mailto:jakob.nylin@gmail.com">jakob.nylin@gmail.com</a></p>
+            <p class="contact">
+                <span id="email-link"></span>
+            </p>
         </header>
         <main>
             <section>
@@ -83,10 +86,10 @@
                     <dt>Bibliotekssystem</dt>
                     <dd>Alma, FOLIO, Primo, VuFind</dd>
 
-                    <dt>Plattform & drrift</dt>
+                    <dt>Plattform &amp; drift</dt>
                     <dd>Linux, Apache, Git, GitLab CI/CD</dd>
 
-                    <dt>Kvalitet & test</dt>
+                    <dt>Kvalitet &amp; test</dt>
                     <dd>Enhetstester, integrationstester, end-to-end-testning (Playwright), tillgänglighetstestning (axe-core)</dd>
                 </dl>
             </section>
