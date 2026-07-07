@@ -3,147 +3,9 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; img-src 'self';">
         <title>Jakob Nylin Nilsson - Systembibliotekarie och utvecklare</title>
-        <style>
-            /* Grundinställningar*/
-            body {
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-                line-height: 1.6;
-                color: #e0e0e0;
-                background-color: #121212;
-                max-width: 700px;
-                margin: 0 auto;
-                padding: 40px 20px;
-            }
-
-            /* Header */
-            header {
-                margin-bottom: 50px;
-                border-bottom: 1px solid #2d2d2d;
-                padding-bottom: 30px;
-            }
-
-            header h1 {
-                font-size: 2.2rem;
-                color: #ffffff;
-                margin-bottom: 10px;
-            }
-
-            header p {
-                font-size: 1.1rem;
-                color: #a0a0a0;
-                margin: 0;
-            }
-
-            /* Rubriker */
-            h2 {
-                color: #ffffff;
-                font-size: 1.5rem;
-                margin-top: 40px;
-                margin-bottom: 20px;
-            }
-
-            /* Gemensam bas för artiklar */
-            article {
-                margin-bottom: 25px;
-            }
-
-            /* Specifik styling för projektkort */
-            .project-card {
-                background-color: #1e1e1e;
-                padding: 20px;
-                border-radius: 6px;
-                border: 1px solid #2d2d2d;
-                transition: transform 0.2s ease, border-color 0.2s ease;
-            }
-
-            /* När man hovrar över ett projekt */
-            .project-card:hover,
-            .project-card:focus-within {
-                transform: translateY(-2px);
-                border-color: #4a90e2;
-            }
-
-            .project-card a:focus-visible {
-                outline: 2px solid #4a90e2;
-                outline-offset: 3px;
-            }
-
-            .project-card h3 {
-                color: #4a90e2; 
-                margin-top: 0;
-                margin-bottom: 10px;
-                font-size: 1.25rem;
-            }
-
-            .project-card p:last-child {
-                margin-bottom: 0;
-            }
-
-            /* Styling för den klassiska CV-delen */
-            .cv-item {
-                margin-bottom: 30px;
-            }
-
-            .cv-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: baseline;
-            }
-
-            .cv-header strong {
-                color: #ffffff;
-                font-size: 1.1rem;
-            }
-
-            /* #949494 på #121212 ger ~6.2:1 kontrast (WCAG AA för liten text kräver 4.5:1) */
-            .cv-timeline {
-                color: #949494;
-                font-size: 0.9rem;
-            }
-
-            .cv-company {
-                color: #a0a0a0;
-                font-size: 0.95rem;
-                margin-top: 2px;
-            }
-
-            .cv-item p {
-                margin-top: 8px;
-                margin-bottom: 0;
-            }
-
-            .cv-item ul {
-                margin: 8px 0 0;
-                padding-left: 20px;
-            }
-
-            .cv-item li {
-                margin-bottom: 4px;
-            }
-
-            /* Länkar */
-            a {
-                color: #4a90e2;
-                text-decoration: none;
-                font-weight: 500;
-            }
-
-            a:hover {
-                text-decoration: underline;
-            }
-
-            /* Footer */
-            footer {
-                margin-top: 60px;
-                padding-top: 20px;
-                border-top: 1px solid #2d2d2d;
-                font-size: 0.85rem;
-                /* #949494 på #121212 ger ~6.2:1 kontrast (tidigare #707070 gav ~3.8:1, under AA-gränsen) */
-                color: #949494;
-                text-align: center;
-            }
-        </style>
+        <link href="stil.css" rel="stylesheet">
     </head>
     <body>
         <header>
@@ -156,9 +18,9 @@
                 <h2>Utvalda projekt</h2>
 
                 <article class="project-card">
-                    <h3>Kurslittkoll</h3>
-                    <p>En öppen applikation för hantering och synkronisering av kurslitteratur. Utvecklad med fokus på ren kodstruktur och långsiktig förvaltningsbarhet. Projektet är släppt som öppen källkod.</p>
-                    <p><a href="https://gitlab.com/lnu-ub/kurslittkoll/" target="_blank">Visa källkod på GitLab &rarr;</a></p>
+                    <h3>LSP Broker – integrationsplattform för bibliotekssystem</h3>
+                    <p>Utvecklade en broker-tjänst i Node.js som abstraherar flera bibliotekssystem bakom ett gemensamt API. Tjänsten hanterar autentisering, användarhantering och kommunikation mot olika LSP:er, vilket möjliggör parallell drift, förenklar systemmigrationer och minskar kopplingen mellan klienter och bakomliggande system.</p>
+                    <p><em>Intern lösning, källkod ej publik.</em></p>
                 </article>
 
                 <article class="project-card">
@@ -166,6 +28,12 @@
                     <p>Strategisk arkitekturlösning implementerad för att agera identitetsmäklare (Identity Broker) mellan IdP och externa leverantörer.</p>
                     <p>Lösningen hanterar komplexa OIDC-flöden (bland annat hantering av <code>aud</code> som array) och automatiserar JIT-kontohantering (Just-In-Time), vilket har avvecklat gamla fragmenterade inloggningslösningar och minimerat manuell administration.</p>
                     <p><em>Intern lösning, källkod ej publik.</em></p>
+                </article>
+
+                <article class="project-card">
+                    <h3>Kurslittkoll</h3>
+                    <p>En öppen applikation för hantering och synkronisering av kurslitteratur. Utvecklad med fokus på ren kodstruktur och långsiktig förvaltningsbarhet. Projektet är släppt som öppen källkod.</p>
+                    <p><a href="https://gitlab.com/lnu-ub/kurslittkoll/" target="_blank" rel="noopener noreferrer">Visa källkod på GitLab &rarr;</a></p>
                 </article>
             </section>
 
@@ -182,7 +50,7 @@
                         <li>Ansvarig för integrationsarkitektur mellan bibliotekets kärnsystem (Alma, FOLIO, VuFind, Primo) och identitetslager (Keycloak, Shibboleth, EZproxy).</li>
                         <li>Designat och implementerat en LSP-agnostisk broker-tjänst i Node.js som abstraherar autentisering och användarhantering mot flera bibliotekssystem parallellt.</li>
                         <li>Utvecklat proaktiv serverövervakning i Bash (Linuxmiljö) för att hantera nätverksmättnad (SYN-RECV) under högtrafik och automatisera återställning av Apache-webbservrar för ökad systemresiliens.</li>                    
-                        <li>Genomfört säkerhetshärdning (CSP, HMAC-baserad autentisering) för webbtjänster.</li>
+                        <li>Genomfört säkerhetshärdning genom införande av CSP och HMAC-baserad autentisering för att minska attackytan och stärka skyddet av interna webbtjänster.</li>
                         <li>Driver kontinuerligt tillgänglighetsarbete, inklusive automatiserad testning (Playwright/axe-core) mot externa leverantörsgränssnitt.</li>
                     </ul>
                 </article>
@@ -197,6 +65,27 @@
                         <li>Strategiskt databasunderhåll och teknisk rådgivning inom konsortiesamarbete.</li>
                     </ul>
                 </article>
+            </section>
+
+            <section>
+                <h2>Teknik</h2>
+
+                <dl class="tech-stack">
+                    <dt>Språk</dt>
+                    <dd>JavaScript (Node.js), Ruby, Bash, SQL</dd>
+
+                    <dt>Integration & identitet</dt>
+                    <dd>OIDC, OAuth2, SAML, Keycloak, Shibboleth, REST</dd>
+
+                    <dt>Bibliotekssystem</dt>
+                    <dd>Alma, FOLIO, Primo, VuFind</dd>
+
+                    <dt>Drift</dt>
+                    <dd>Linux, Apache, Git, GitLab CI/CD</dd>
+
+                    <dt>Kvalitet & test</dt>
+                    <dd>Enhetstester, integrationstester, end-to-end-testning (Playwright), tillgänglighetstestning (axe-core)</dd>
+                </dl>
             </section>
         </main>
         <footer>

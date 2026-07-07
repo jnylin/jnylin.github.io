@@ -1,0 +1,161 @@
+/* Grundinställningar*/
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    color: #e0e0e0;
+    background-color: #121212;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* Header */
+header {
+    margin-bottom: 50px;
+    border-bottom: 1px solid #2d2d2d;
+    padding-bottom: 30px;
+}
+
+header h1 {
+    font-size: 2.2rem;
+    color: #ffffff;
+    margin-bottom: 10px;
+}
+
+header p {
+    font-size: 1.1rem;
+    color: #a0a0a0;
+    margin: 0;
+}
+
+/* Rubriker */
+h2 {
+    color: #ffffff;
+    font-size: 1.5rem;
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+
+/* Gemensam bas för artiklar */
+article {
+    margin-bottom: 25px;
+}
+
+/* Specifik styling för projektkort */
+.project-card {
+    background-color: #1e1e1e;
+    padding: 20px;
+    border-radius: 6px;
+    border: 1px solid #2d2d2d;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+/* När man hovrar över ett projekt */
+.project-card:hover,
+.project-card:focus-within {
+    transform: translateY(-2px);
+    border-color: #4a90e2;
+}
+
+.project-card a:focus-visible {
+    outline: 2px solid #4a90e2;
+    outline-offset: 3px;
+}
+
+.project-card h3 {
+    color: #4a90e2; 
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.25rem;
+}
+
+.project-card p:last-child {
+    margin-bottom: 0;
+}
+
+/* Styling för den klassiska CV-delen */
+.cv-item {
+    margin-bottom: 30px;
+}
+
+.cv-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.cv-header strong {
+    color: #ffffff;
+    font-size: 1.1rem;
+}
+
+/* #949494 på #121212 ger ~6.2:1 kontrast (WCAG AA för liten text kräver 4.5:1) */
+.cv-timeline {
+    color: #949494;
+    font-size: 0.9rem;
+}
+
+.cv-company {
+    color: #a0a0a0;
+    font-size: 0.95rem;
+    margin-top: 2px;
+}
+
+.cv-item p {
+    margin-top: 8px;
+    margin-bottom: 0;
+}
+
+.cv-item ul {
+    margin: 8px 0 0;
+    padding-left: 20px;
+}
+
+.cv-item li {
+    margin-bottom: 4px;
+}
+
+/* Länkar */
+a {
+    color: #4a90e2;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Footer */
+footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid #2d2d2d;
+    font-size: 0.85rem;
+    /* #949494 på #121212 ger ~6.2:1 kontrast (tidigare #707070 gav ~3.8:1, under AA-gränsen) */
+    color: #949494;
+    text-align: center;
+}
+
+.tech-stack {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 0.5rem 1rem;
+    margin: 0;
+}
+
+.tech-stack dt {
+    font-weight: 600;
+    color: #fff;
+}
+
+.tech-stack dd {
+    margin: 0;
+}
+
+@media (max-width: 500px) {
+    .tech-stack {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+}

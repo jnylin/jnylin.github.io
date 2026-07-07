@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; img-src 'self';">
+        <title>Jakob Nylin Nilsson - Systems Librarian and Developer</title>
+        <link href="stil.css" rel="stylesheet">
+    </head>
+    <body>
+        <header>
+            <h1>Jakob Nylin Nilsson</h1>
+            <p>Systems Librarian and Developer building resilient integrations, automated workflows, and robust system architecture.</p>
+            <p class="contact"><a href="mailto:jakob.nylin@gmail.com">jakob.nylin@gmail.com</a></p>
+        </header>
+        <main>
+            <section>
+                <h2>Featured Projects</h2>
+
+                <article class="project-card">
+                    <h3>LSP Broker – Integration Platform for Library Management Systems</h3>
+                    <p>Developed a custom broker service in Node.js that abstracts multiple library management systems behind a unified API. The service manages authentication, user provisioning, and communication across different LSPs, enabling concurrent system execution, simplifying data migrations, and decoupling clients from underlying backend infrastructure.</p>
+                    <p><em>Internal solution, source code is private.</em></p>
+                </article>
+
+                <article class="project-card">
+                    <h3>Keycloak (Identity Broker &amp; Strategic Enabler)</h3>
+                    <p>A strategic architectural solution implemented to act as an Identity Broker between internal IdPs and external vendors.</p>
+                    <p>The solution handles complex OIDC flows (including handling <code>aud</code> as an array) and automates JIT (Just-In-Time) account provisioning, deprecating legacy fragmented login setups and minimizing manual administration.</p>
+                    <p><em>Internal solution, source code is private.</em></p>
+                </article>
+
+                <article class="project-card">
+                    <h3>Kurslittkoll</h3>
+                    <p>An open-source application designed for managing and synchronizing course literature. Developed with a strong focus on clean code structure and long-term maintainability. The project is fully open source.</p>
+                    <p><a href="https://gitlab.com/lnu-ub/kurslittkoll/" target="_blank" rel="noopener noreferrer">View source on GitLab &rarr;</a></p>
+                </article>
+            </section>
+
+            <section>
+                <h2>Experience</h2>
+
+                <article class="cv-item">
+                    <div class="cv-header">
+                        <strong>Systems Librarian</strong>
+                        <span class="cv-timeline">2015 &ndash; Present</span>
+                    </div>
+                    <div class="cv-company">Linnaeus University</div>
+                    <ul>
+                        <li>Responsible for integration architecture between core library services (Alma, FOLIO, VuFind, Primo) and identity layers (Keycloak, Shibboleth, EZproxy).</li>
+                        <li>Designed and implemented an LSP-agnostic broker service in Node.js, abstracting authentication and user management across multiple concurrent systems.</li>
+                        <li>Developed proactive server monitoring in Bash (Linux environment) to detect network saturation (<code>SYN-RECV</code>) during peak traffic and automate Apache web server recovery for enhanced resilience.</li>
+                        <li>Executed security hardening by introducing CSP and HMAC-based authentication to reduce the attack surface and strengthen protection for internal web services.</li>
+                        <li>Lead continuous accessibility (a11y) initiatives, including automated testing (Playwright/axe-core) against external vendor interfaces.</li>
+                    </ul>
+                </article>
+
+                <article class="cv-item">
+                    <div class="cv-header">
+                        <strong>Consultant</strong>
+                        <span class="cv-timeline">2021 &ndash; Present</span>
+                    </div>
+                    <div class="cv-company">The Eira Consortium (part-time)</div>
+                    <ul>
+                        <li>Strategic database maintenance and technical advisory within the consortium collaboration.</li>
+                    </ul>
+                </article>
+            </section>
+
+            <section>
+                <h2>Tech Stack</h2>
+
+                <dl class="tech-stack">
+                    <dt>Languages</dt>
+                    <dd>JavaScript (Node.js), Ruby, Bash, SQL</dd>
+
+                    <dt>Integration &amp; Identity</dt>
+                    <dd>OIDC, OAuth2, SAML, Keycloak, Shibboleth, REST</dd>
+
+                    <dt>Library Systems</dt>
+                    <dd>Alma, FOLIO, Primo, VuFind</dd>
+
+                    <dt>Operations &amp; Infrastructure</dt>
+                    <dd>Linux, Apache, Git, GitLab CI/CD</dd>
+
+                    <dt>Quality &amp; Testing</dt>
+                    <dd>Unit testing, integration testing, end-to-end testing (Playwright), accessibility testing (axe-core)</dd>
+                </dl>
+            </section>
+        </main>
+        <footer>
+            <p>&copy; 2026 Jakob Nylin Nilsson. Built with pure HTML, CSS, and JavaScript. Hosted on GitHub Pages.</p>
+        </footer>
+    </body>
+</html>
