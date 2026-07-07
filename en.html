@@ -37,10 +37,14 @@
                 <article class="project-card">
                     <h3>Keycloak (Identity Broker &amp; Strategic Enabler)</h3>
                     <p>A strategic architectural solution implemented to act as an Identity Broker between internal IdPs and external vendors.</p>
-                    <p>The solution handles complex OIDC flows and automates JIT (Just-In-Time) account provisioning, deprecating legacy fragmented login setups and minimizing manual administration.</p>
-                    <p><em>Internal solution, source code is private.</em></p>
+                    <p>The solution handles complex OIDC flows and federation with external identity providers (including ADFS), alongside automated JIT account provisioning. By consolidating three previously separate integrations for the regional healthcare sector into a single access point, legacy fragmented logins were deprecated and manual administration was minimized.</p>
+                    <p><em>Infrastructure and environment configurations are private, but custom Java SPI extensions are available as open-source:</em></p>
+                    <ul>
+                        <li><a href="https://gitlab.com/lnu-ub/medbib-keycloak-personnummer-mapper" target="_blank" rel="noopener noreferrer">In-memory processing of personal identity numbers (persisting only birthdate) &rarr;</a></li>
+                        <li><a href="https://gitlab.com/lnu-ub/medbib-keycloak-saml-pseudoid/" target="_blank" rel="noopener noreferrer">SAML Pairwise-ID standard implementation (missing natively in Keycloak) &rarr;</a></li>
+                    </ul>
                 </article>
-
+                
                 <article class="project-card">
                     <h3>Kurslittkoll</h3>
                     <p>An open-source application designed for managing, analyzing, and synchronizing course literature. Features custom similarity and fuzzy matching algorithms to automatically map and cleanse textual reading lists against structured library catalog data. Developed with a strong focus on clean code structure and long-term maintainability.</p>

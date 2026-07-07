@@ -37,8 +37,12 @@
                 <article class="project-card">
                     <h3>Keycloak (Identitetsmäklare &amp; strategisk möjliggörare)</h3>
                     <p>Strategisk arkitekturlösning implementerad för att agera identitetsmäklare (Identity Broker) mellan IdP och externa leverantörer.</p>
-                    <p>Lösningen hanterar komplexa OIDC-flöden och automatiserar JIT-kontohantering (Just-In-Time), vilket har avvecklat gamla fragmenterade inloggningslösningar och minimerat manuell administration.</p>
-                    <p><em>Intern lösning, källkod ej publik.</em></p>
+                    <p>Lösningen hanterar komplexa OIDC-flöden och federering mot externa identitetsleverantörer (bland annat ADFS) samt automatiserar JIT-kontohantering. Genom att konsolidera tre tidigare separata integrationer mot regional vårdsektor till en enda gemensam åtkomstpunkt, har gamla fragmenterade inloggningslösningar avvecklats och manuell administration minimerats.</p>
+                    <p><em>Infrastruktur och miljökonfiguration är interna, men utvalda Java SPI-utökningar finns tillgängliga som öppen källkod:</em></p>
+                    <ul>
+                        <li><a href="https://gitlab.com/lnu-ub/medbib-keycloak-personnummer-mapper" target="_blank" rel="noopener noreferrer">Säker hantering av personnummer i ramminnet (endast födelsedatum persisteras) &rarr;</a></li>
+                        <li><a href="https://gitlab.com/lnu-ub/medbib-keycloak-saml-pseudoid/" target="_blank" rel="noopener noreferrer">Implementering av SAML Pairwise-ID standarden (saknades i Keycloak) &rarr;</a></li>
+                    </ul>
                 </article>
 
                 <article class="project-card">
