@@ -2,6 +2,22 @@
 <html lang="sv">
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+        <meta name="description" content="Ett litet flipperspel byggt med Canvas och JavaScript. Spela direkt i webbläsaren med tangentbord eller touch.">
+
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://jnylin.github.io/pinball/">
+        <meta property="og:title" content="Flipperspel i Canvas">
+        <meta property="og:description" content="Ett litet flipperspel byggt med Canvas och JavaScript. Spela direkt i webbläsaren med tangentbord eller touch.">
+        <meta property="og:image" content="https://jnylin.github.io/pinball/preview.png">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="Flipperspel i Canvas">
+        <meta name="twitter:description" content="Ett litet flipperspel byggt med Canvas och JavaScript. Spela direkt i webbläsaren med tangentbord eller touch.">
+        <meta name="twitter:image" content="https://jnylin.github.io/pinball/preview.png">
+
         <link rel="stylesheet" href="style.css">
         <title>Flipperspel i Canvas</title>
     </head>
@@ -12,7 +28,7 @@
             <span>Bäst: <b id="hi">0</b></span>
         </div>
         <canvas id="c" width="420" height="660"></canvas>
-        <div id="msg">← → eller A D för flipprar &nbsp;|&nbsp; Space för ny boll</div>
+        <div id="msg">← → / A D eller tryck vänster/höger skärmhalva &nbsp;|&nbsp; Space eller dra nedåt för ny boll</div>
         <script type="module" src="src/main.js"></script>
     </body>
 </html>

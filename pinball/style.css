@@ -1,3 +1,8 @@
+html, body {
+    overscroll-behavior: none;
+    touch-action: none;
+}
+
 body {
     background: #0a0a12;
     margin: 0;
@@ -6,6 +11,9 @@ body {
     align-items: center;
     padding: 1rem 0;
     font-family: sans-serif;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 #top-bar {
@@ -27,10 +35,16 @@ canvas {
     border: 0.5px solid #334155;
     background: #0a0a12;
     display: block;
+    width: auto;
+    height: auto;
+    max-width: calc(100vw - 2rem);
+    max-height: calc(100vh - 120px);
 }
 
 #msg {
     font-size: 13px;
     color: #64748b;
     margin-top: 8px;
+    text-align: center;
+    padding: 0 1rem;
 }

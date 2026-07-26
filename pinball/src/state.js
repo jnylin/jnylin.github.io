@@ -27,7 +27,7 @@ export const game = {
 
 let nudgeResetTimer = null;
 
-const IDLE_MSG = 'Håll Space för att ladda · släpp för att skjuta';
+const IDLE_MSG = 'Håll Space eller dra nedåt för att ladda · släpp för att skjuta';
 msgEl.textContent = IDLE_MSG;
 
 export function updateUI() {
