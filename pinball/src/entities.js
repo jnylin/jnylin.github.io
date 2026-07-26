@@ -1,9 +1,11 @@
 import { W, H, WALL, LANE_DIVIDER_X, LANE_CURVE_R, LANE_TOP, laneCurveCenter } from './constants.js';
 
 // --- Flipprar ---
-// px=128 ger ett viloläge-gap på ~2.7 bollbredder mellan topparna (135 gav
-// ~1.9 — för snävt sedan bumper-triangeln blev ensam kvar; 120 gav ~3.6).
-const FLIPPER_PX = 128;
+// px=130 ger ett viloläge-gap på ~2.5 bollbredder mellan topparna (128 gav
+// ~2.7; 135 gav ~1.9 — för snävt sedan bumper-triangeln blev ensam kvar;
+// 120 gav ~3.6). Liten, försiktig åtstramning av 128 — god marginal kvar
+// till 135-gränsen.
+const FLIPPER_PX = 130;
 export const flippers = [
     { px: FLIPPER_PX,     py: H - 85, angle: 0.15 * Math.PI, restAngle: 0.15 * Math.PI, activeAngle: -0.1 * Math.PI, dir: 'left'  },
     { px: W - FLIPPER_PX, py: H - 85, angle: 0.85 * Math.PI, restAngle: 0.85 * Math.PI, activeAngle:  1.1 * Math.PI, dir: 'right' },
@@ -17,14 +19,13 @@ export const bumpers = [
 ];
 
 // --- Slingshots ---
-// Små gummiband mellan skenorna och flippersarna som knuffar iväg bollen
-// med extra fart när den träffar dem. Den yttre änden sitter en bit ifrån
-// guiden (inte exakt på den) — precis vid toppen bildas då en ~19px lucka
-// som bollen kan smita in genom, som sedan smalnar av mot guiden längre
-// ner (en riktig inlane, inte bara ett hål att glida rakt igenom).
+// Små gummiband som knuffar iväg bollen med extra fart när den träffar dem.
+// Placerade diagonalt strax ovanför respektive outlane-mynning (guiden som
+// löper längs sidoväggen ner mot draget) för att fånga upp och studsa
+// tillbaka bollar som annars gled rakt ner i outlanen utan motstånd.
 export const slingshots = [
-    { x1: 77,     y1: H - 194, x2: 100,     y2: H - 155, flash: 0 },
-    { x1: W - 77, y1: H - 194, x2: W - 100, y2: H - 155, flash: 0 },
+    { x1: 47,     y1: H - 234, x2: 80,     y2: H - 185, flash: 0 },
+    { x1: W - 87, y1: H - 234, x2: W - 110, y2: H - 185, flash: 0 },
 ];
 
 export function arcSegments(center, r, a0, a1, steps) {
