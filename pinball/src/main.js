@@ -1,6 +1,6 @@
 import { G, MAX_SPEED, BALL_R, WALL, W, H, SUBSTEP_DIST, FLIP_SPEED, LAUNCH_RATE, DYING_FRAMES, LANE_DIVIDER_X, LAUNCH_MAX_VY, PLUNGER_X, PLUNGER_Y } from './constants.js';
-import { flippers, bumpers, guides, slingshots } from './entities.js';
-import { collideFlipper, collideBumper, collideGuide, collideSlingshot } from './physics.js';
+import { flippers, bumpers, guides, slingshots, laneGate, posts } from './entities.js';
+import { collideFlipper, collideBumper, collideGuide, collideSlingshot, collidePost } from './physics.js';
 import { game, handleDrain, ballReturnedToPlunger } from './state.js';
 import { keys, leftDown, rightDown } from './input.js';
 import { tickBallSave } from './ballSave.js';
@@ -85,7 +85,14 @@ function update() {
         if (b.x - BALL_R < WALL)     { b.vx =  Math.abs(b.vx) * 0.75; b.x = WALL + BALL_R; }
         if (b.x + BALL_R > W - WALL) { b.vx = -Math.abs(b.vx) * 0.75; b.x = W - WALL - BALL_R; }
 
+        // Grinden stängs först nästa substep efter att bollen lämnat banan,
+        // så den inte kan råka stänga på sig själv i samma steg den passerar.
+        const gateActive = b.hasEscaped;
+        if (!b.hasEscaped && b.x < LANE_DIVIDER_X) b.hasEscaped = true;
+        if (gateActive) collideGuide(b, laneGate);
+
         for (const bmp of bumpers)    collideBumper(b, bmp);
+        for (const p   of posts)      collidePost(b, p);
         for (const sl  of slingshots) collideSlingshot(b, sl);
         for (const g   of guides)     collideGuide(b, g);
         for (const f   of flippers)   collideFlipper(b, f);

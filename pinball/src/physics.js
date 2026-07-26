@@ -29,13 +29,25 @@ export function collideFlipper(ball, f) {
     const tipY = f.py + Math.sin(f.angle)*FLIP_LEN;
     reflectBallOffSegment(ball, f.px, f.py, tipX, tipY, FLIP_R, (b, nx, ny, dot) => {
         const active = !game.tilted && ((f.dir === 'left' && leftDown()) || (f.dir === 'right' && rightDown()));
-        const boost  = active ? 1.8 : 0.4;
-        b.vx = (b.vx - 2*dot*nx) * boost;
-        b.vy = (b.vy - 2*dot*ny) * boost;
-        // Den garanterade extra-puffen uppåt hör bara till en aktiv flick —
-        // annars fick även en död studs mot en stillastående flipper alltid
-        // en gratis puff, vilket omöjliggjorde att den tappade fart över tid.
-        if (active && b.vy > -2) b.vy -= 4;
+        if (active) {
+            // Aktiv flick: hela vektorn boostas rejält — det är den kraftiga,
+            // riktade utslungningen som ska kännas av en medveten flick.
+            b.vx = (b.vx - 2*dot*nx) * 1.8;
+            b.vy = (b.vy - 2*dot*ny) * 1.8;
+            // Den garanterade extra-puffen uppåt hör bara till en aktiv flick —
+            // annars fick även en död studs mot en stillastående flipper alltid
+            // en gratis puff, vilket omöjliggjorde att den tappade fart över tid.
+            if (b.vy > -2) b.vy -= 4;
+        } else {
+            // Stillastående flipper: bara normalkomponenten (studsen) dämpas
+            // (0.4 = restitution) — tangentialfarten (rullningen längs
+            // flippern) ska lämnas orörd. Skalades tidigare hela vektorn ner,
+            // vilket bromsade en rullande boll orimligt fort vid upprepad
+            // kontakt (t.ex. när gravitationen håller den tryckt mot en
+            // lutande flipper eller guide varje bildruta).
+            b.vx -= 1.4 * dot * nx;
+            b.vy -= 1.4 * dot * ny;
+        }
     });
 }
 
@@ -52,9 +64,28 @@ export function collideBumper(ball, b) {
     const nx    = dx/dist, ny = dy/dist;
     ball.x      = b.x + nx * min;
     ball.y      = b.y + ny * min;
-    // 10% dämpning per studs — annars konserverar bumpern farten exakt och
-    // bollen kan studsa runt bumper-triangeln i evighet utan att tappa fart.
-    const speed = Math.max(Math.hypot(ball.vx, ball.vy) * 0.9, 6);
+    // 15% dämpning per studs — annars konserverar bumpern farten nästan
+    // exakt och bollen kan studsa runt bumper-triangeln snabbt utan att
+    // tappa fart (0.9 kändes för kraftigt över flera studsar i klustret).
+    const speed = Math.max(Math.hypot(ball.vx, ball.vy) * 0.85, 6);
+    ball.vx     = nx * speed;
+    ball.vy     = ny * speed;
+}
+
+// En stum stolpe (ingen poäng/ljud) som studsar bollen radiellt bort från
+// sin mittpunkt, till skillnad från en guide som bara håller bollen på ena
+// sidan av en linje. Det gör den till en riktig "spets" som kastar bollen
+// in mot planet oavsett vilken vinkel den kommer in i, snarare än att bara
+// bilda ännu en korridor bollen kan glida rakt ner genom.
+export function collidePost(ball, p) {
+    const dx   = ball.x - p.x, dy = ball.y - p.y;
+    const dist = Math.hypot(dx, dy);
+    const min  = BALL_R + p.r;
+    if (dist >= min || dist < 0.01) return;
+    const nx    = dx/dist, ny = dy/dist;
+    ball.x      = p.x + nx * min;
+    ball.y      = p.y + ny * min;
+    const speed = Math.hypot(ball.vx, ball.vy) * 0.9;
     ball.vx     = nx * speed;
     ball.vy     = ny * speed;
 }
@@ -62,8 +93,11 @@ export function collideBumper(ball, b) {
 export function collideGuide(ball, g) {
     reflectBallOffSegment(ball, g.x1, g.y1, g.x2, g.y2, GUIDE_R, (b, nx, ny, dot) => {
         if (dot < 0) {
-            b.vx = (b.vx - 2*dot*nx) * 0.7;
-            b.vy = (b.vy - 2*dot*ny) * 0.7;
+            // Bara normalkomponenten studsar/dämpas (0.7 = restitution) —
+            // tangentialfarten (rullningen längs guiden) lämnas orörd, se
+            // motsvarande kommentar i collideFlipper.
+            b.vx -= 1.7 * dot * nx;
+            b.vy -= 1.7 * dot * ny;
         }
     });
 }
