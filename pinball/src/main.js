@@ -8,20 +8,25 @@ import { tickCombo } from './combo.js';
 import { draw } from './render.js';
 
 // --- Uppdatera speltillstånd ---
-function updateFlippers() {
+function updateFlippers(dtFactor = 1) {
     for (const f of flippers) {
         const pressing = !game.tilted && ((f.dir === 'left' && leftDown()) || (f.dir === 'right' && rightDown()));
+        const prevAngle = f.angle;
+
         if (pressing) {
-            f.angle += FLIP_SPEED * (f.dir === 'left' ? -1 : 1);
+            f.angle += FLIP_SPEED * dtFactor * (f.dir === 'left' ? -1 : 1);
             f.angle  = f.dir === 'left'
                 ? Math.max(f.activeAngle, f.angle)
                 : Math.min(f.activeAngle, f.angle);
         } else {
-            f.angle += FLIP_SPEED * 0.6 * (f.dir === 'left' ? 1 : -1);
+            f.angle += FLIP_SPEED * 0.6 * dtFactor * (f.dir === 'left' ? 1 : -1);
             f.angle  = f.dir === 'left'
                 ? Math.min(f.restAngle, f.angle)
                 : Math.max(f.restAngle, f.angle);
         }
+
+        // Flippern klassas som "i aktiv rörelse uppåt" BARA om vinkeln faktiskt ändrades medan man tryckte
+        f.isMovingUp = pressing && (f.angle !== prevAngle);
     }
 }
 

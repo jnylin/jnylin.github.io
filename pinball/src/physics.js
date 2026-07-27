@@ -25,26 +25,22 @@ export function reflectBallOffSegment(ball, ax, ay, bx, by, segR, onHit) {
 
 // --- Kollisioner ---
 export function collideFlipper(ball, f) {
-    const tipX = f.px + Math.cos(f.angle)*FLIP_LEN;
-    const tipY = f.py + Math.sin(f.angle)*FLIP_LEN;
+    const tipX = f.px + Math.cos(f.angle) * FLIP_LEN;
+    const tipY = f.py + Math.sin(f.angle) * FLIP_LEN;
+
     reflectBallOffSegment(ball, f.px, f.py, tipX, tipY, FLIP_R, (b, nx, ny, dot) => {
-        const active = !game.tilted && ((f.dir === 'left' && leftDown()) || (f.dir === 'right' && rightDown()));
-        if (active) {
-            // Aktiv flick: hela vektorn boostas rejält — det är den kraftiga,
-            // riktade utslungningen som ska kännas av en medveten flick.
-            b.vx = (b.vx - 2*dot*nx) * 1.8;
-            b.vy = (b.vy - 2*dot*ny) * 1.8;
-            // Den garanterade extra-puffen uppåt hör bara till en aktiv flick —
-            // annars fick även en död studs mot en stillastående flipper alltid
-            // en gratis puff, vilket omöjliggjorde att den tappade fart över tid.
+        // En "aktiv flick" kräver att flippern faktiskt är mitt i sin rörelse uppåt
+        const isFlick = f.isMovingUp;
+
+        if (isFlick) {
+            // Aktiv flick: hela vektorn boostas rejält
+            b.vx = (b.vx - 2 * dot * nx) * 1.8;
+            b.vy = (b.vy - 2 * dot * ny) * 1.8;
+
             if (b.vy > -2) b.vy -= 4;
         } else {
-            // Stillastående flipper: bara normalkomponenten (studsen) dämpas
-            // (0.4 = restitution) — tangentialfarten (rullningen längs
-            // flippern) ska lämnas orörd. Skalades tidigare hela vektorn ner,
-            // vilket bromsade en rullande boll orimligt fort vid upprepad
-            // kontakt (t.ex. när gravitationen håller den tryckt mot en
-            // lutande flipper eller guide varje bildruta).
+            // Stillastående flipper (oavsett om den hålls uppe i toppläget eller ligger i viloläge):
+            // Bara normalkomponenten dämpas så att bollen kan rulla snyggt längs flippern.
             b.vx -= 1.4 * dot * nx;
             b.vy -= 1.4 * dot * ny;
         }
