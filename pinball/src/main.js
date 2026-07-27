@@ -1,7 +1,7 @@
 import { G, MAX_SPEED, BALL_R, WALL, W, H, SUBSTEP_DIST, FLIP_SPEED, LAUNCH_RATE, DYING_FRAMES, LANE_DIVIDER_X, LAUNCH_MAX_VY, PLUNGER_X, PLUNGER_Y } from './constants.js';
 import { flippers, bumpers, guides, slingshots, laneGate, posts } from './entities.js';
 import { collideFlipper, collideBumper, collideGuide, collideSlingshot, collidePost } from './physics.js';
-import { game, handleDrain, ballReturnedToPlunger } from './state.js';
+import { game, handleDrain, ballReturnedToPlunger, launchBall } from './state.js';
 import { keys, leftDown, rightDown } from './input.js';
 import { tickBallSave } from './ballSave.js';
 import { tickCombo } from './combo.js';
@@ -48,13 +48,14 @@ function checkLaunchReturn(b) {
     return false;
 }
 
-function update() {
+function update(dtFactor = 1) {
     updateFlippers();
     decayShake();
 
+    // 1. Ladda skottet när Space hålls nere (Tangenthantering)
     const chargeable = (!game.ball || game.ball.waiting) && !game.over;
     if (chargeable && keys['Space']) {
-        game.launchPower = Math.min(1, game.launchPower + LAUNCH_RATE);
+        game.launchPower = Math.min(1, game.launchPower + LAUNCH_RATE * dtFactor);
     }
 
     const b = game.ball;
@@ -69,8 +70,10 @@ function update() {
         return;
     }
 
-    b.vy += G;
+    // Applicera gravitations- och hastighetsfaktor för dt (så farten blir stabil i 60/120Hz)
+    b.vy += G * dtFactor;
     b.vx = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, b.vx));
+    
     // I skjutbanan tillåts högre fart så att en fullkraftsskjutning inte
     // klipps ner till det generella hastighetstaket innan den nått toppen.
     const vyCap = b.x > LANE_DIVIDER_X ? LAUNCH_MAX_VY : MAX_SPEED;
@@ -78,8 +81,8 @@ function update() {
 
     const steps = Math.max(1, Math.ceil(Math.max(Math.abs(b.vx), Math.abs(b.vy)) / SUBSTEP_DIST));
     for (let s = 0; s < steps; s++) {
-        b.x += b.vx / steps;
-        b.y += b.vy / steps;
+        b.x += (b.vx * dtFactor) / steps;
+        b.y += (b.vy * dtFactor) / steps;
 
         // Sidoväggar
         if (b.x - BALL_R < WALL)     { b.vx =  Math.abs(b.vx) * 0.75; b.x = WALL + BALL_R; }
@@ -97,6 +100,7 @@ function update() {
         for (const g   of guides)     collideGuide(b, g);
         for (const f   of flippers)   collideFlipper(b, f);
     }
+    
     for (const bmp of bumpers)    { if (bmp.flash > 0) bmp.flash--; }
     for (const sl  of slingshots) { if (sl.flash  > 0) sl.flash--;  }
 
@@ -108,6 +112,22 @@ function update() {
     }
 }
 
-function loop() { update(); draw(); requestAnimationFrame(loop); }
+let lastTime = performance.now();
 
-loop();
+function loop(currentTime) {
+    // Normalisera beräkningen mot 60 FPS (16.67ms per frame)
+    const dt = (currentTime - lastTime) / 1000;
+    lastTime = currentTime;
+
+    // Kapa extremvärden (t.ex. om man byter flik i webbläsaren)
+    const clampedDt = Math.min(dt, 0.1);
+    const dtFactor = clampedDt * 60;
+
+    update(dtFactor);
+    draw();
+
+    requestAnimationFrame(loop);
+}
+
+// Starta spelloopen
+requestAnimationFrame(loop);
