@@ -86,9 +86,49 @@ function releaseTouch(id) {
     }
 }
 
+// --- Tilt via mobilens gyro/accelerometer ---
+// Ett kraftigt ryck i telefonen ger samma nudge/tilt-hantering som Z/X/N
+// på tangentbordet — återanvänder nudgeGame() istället för en egen
+// tilt-räknare, så varningar/3-strikes/skärmskakning fungerar identiskt.
+let lastAcc = null;
+let gyroInitialized = false;
+const SHAKE_THRESHOLD = 12; // m/s² — okalibrerad, justera efter test på riktig mobil
+
+function handleMotion(event) {
+    const acc = event.accelerationIncludingGravity;
+    if (!acc || acc.x === null || acc.y === null) return;
+
+    if (lastAcc) {
+        const deltaX = acc.x - lastAcc.x;
+        const deltaY = acc.y - lastAcc.y;
+        if (Math.abs(deltaX) + Math.abs(deltaY) > SHAKE_THRESHOLD) {
+            nudgeGame({ x: deltaX * 0.5, y: deltaY * 0.5 });
+        }
+    }
+    lastAcc = { x: acc.x, y: acc.y };
+}
+
+// iOS kräver explicit tillstånd från ett användar-tap, Android/övriga
+// webbläsare lyssnar direkt — anropas första gången spelaren rör canvasen.
+function initGyroTilt() {
+    if (gyroInitialized) return;
+    gyroInitialized = true;
+
+    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+        DeviceMotionEvent.requestPermission()
+            .then(response => {
+                if (response === 'granted') window.addEventListener('devicemotion', handleMotion);
+            })
+            .catch(() => {});
+    } else if (typeof DeviceMotionEvent !== 'undefined') {
+        window.addEventListener('devicemotion', handleMotion);
+    }
+}
+
 document.addEventListener('touchstart', e => {
     e.preventDefault();
     initAudio();
+    initGyroTilt();
 
     if (game.over) resetGame();
 
