@@ -1,5 +1,5 @@
 import { W, H, WALL, BALL_R, FLIP_LEN, FLIP_R, SLINGSHOT_R, PLUNGER_X, PLUNGER_Y, DYING_FRAMES } from './constants.js';
-import { flippers, bumpers, guides, slingshots, laneGate, posts } from './entities.js';
+import { flippers, bumpers, guides, slingshots, laneGate, posts, kickbacks } from './entities.js';
 import { game } from './state.js';
 import { isBallSaveActive, ballSaveFraction } from './ballSave.js';
 import { comboMultiplier, comboFraction } from './combo.js';
@@ -67,6 +67,19 @@ function drawSlingshots() {
         ctx.beginPath();
         ctx.moveTo(s.x1, s.y1);
         ctx.lineTo(s.x2, s.y2);
+        ctx.stroke();
+    }
+}
+
+function drawKickbacks() {
+    ctx.lineCap = 'round';
+    for (const k of kickbacks) {
+        const lit = k.flash > 0;
+        ctx.strokeStyle = lit ? '#7dd3fc' : '#1e4a5f';
+        ctx.lineWidth   = 6;
+        ctx.beginPath();
+        ctx.moveTo(k.x1, k.y1);
+        ctx.lineTo(k.x2, k.y2);
         ctx.stroke();
     }
 }
@@ -180,6 +193,7 @@ export function draw() {
     drawWalls();
     drawPosts();
     drawBumpers();
+    drawKickbacks();
     drawSlingshots();
     for (const f of flippers) drawFlipper(f);
     drawBall();

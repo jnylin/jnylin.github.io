@@ -47,6 +47,17 @@ export const slingshots = [
     { x1: W - 87, y1: H - 234, x2: W - 110, y2: H - 185, flash: 0 },
 ];
 
+// --- Kickback ---
+// En smal ränna parallell med huvudguiden, liggande i mellanrummet mellan
+// den och outlane-guiden. En boll som studsar inåt istället för att
+// fortsätta rakt ner i outlanen kan fastna i den här rännan istället —
+// och när den når rännans bortre ände räknas det inte som drain, utan
+// bollen skickas tillbaka till plungern för en omskjutning (main.js).
+export const kickbacks = [
+    { x1: 75,  y1: 550, x2: 115, y2: 585, flash: 0 },
+    { x1: 305, y1: 550, x2: 265, y2: 585, flash: 0 },
+];
+
 export function arcSegments(center, r, a0, a1, steps) {
     const pts = [];
     for (let i = 0; i <= steps; i++) {

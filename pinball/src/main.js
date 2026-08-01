@@ -1,5 +1,5 @@
 import { G, MAX_SPEED, BALL_R, WALL, W, H, SUBSTEP_DIST, FLIP_SPEED, LAUNCH_RATE, DYING_FRAMES, LANE_DIVIDER_X, LAUNCH_MAX_VY, PLUNGER_X, PLUNGER_Y } from './constants.js';
-import { flippers, bumpers, guides, slingshots, laneGate, posts } from './entities.js';
+import { flippers, bumpers, guides, slingshots, laneGate, posts, kickbacks } from './entities.js';
 import { collideFlipper, collideBumper, collideGuide, collideSlingshot, collidePost } from './physics.js';
 import { game, handleDrain, ballReturnedToPlunger, launchBall } from './state.js';
 import { keys, leftDown, rightDown } from './input.js';
@@ -35,6 +35,27 @@ function decayShake() {
     game.shake.y *= 0.8;
     if (Math.abs(game.shake.x) < 0.05) game.shake.x = 0;
     if (Math.abs(game.shake.y) < 0.05) game.shake.y = 0;
+}
+
+const KICKBACK_CATCH_R = 20;
+
+// Fångar en boll som hittat in i kickback-rännan (se entities.js) och nått
+// dess bortre ände — räknas inte som drain, utan skickas tillbaka till
+// plungern precis som en boll som rullat tillbaka i skjutbanan.
+function checkKickback(b) {
+    for (const k of kickbacks) {
+        if (Math.hypot(b.x - k.x2, b.y - k.y2) < KICKBACK_CATCH_R) {
+            k.flash = 12;
+            b.x = PLUNGER_X;
+            b.y = PLUNGER_Y;
+            b.vx = 0;
+            b.vy = 0;
+            b.waiting = true;
+            ballReturnedToPlunger();
+            return true;
+        }
+    }
+    return false;
 }
 
 // Fångar en boll som inte orkade hela vägen upp genom skjutbanan och föll
@@ -102,13 +123,16 @@ function update(dtFactor = 1) {
         for (const bmp of bumpers)    collideBumper(b, bmp);
         for (const p   of posts)      collidePost(b, p);
         for (const sl  of slingshots) collideSlingshot(b, sl);
+        for (const k   of kickbacks)  collideGuide(b, k);
         for (const g   of guides)     collideGuide(b, g);
         for (const f   of flippers)   collideFlipper(b, f);
     }
-    
+
     for (const bmp of bumpers)    { if (bmp.flash > 0) bmp.flash--; }
     for (const sl  of slingshots) { if (sl.flash  > 0) sl.flash--;  }
+    for (const k   of kickbacks)  { if (k.flash   > 0) k.flash--;   }
 
+    if (checkKickback(b)) return;
     if (checkLaunchReturn(b)) return;
 
     if (b.y > H + 20) {
