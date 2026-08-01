@@ -54,8 +54,8 @@ export const slingshots = [
 // och när den når rännans bortre ände räknas det inte som drain, utan
 // bollen skickas tillbaka till plungern för en omskjutning (main.js).
 export const kickbacks = [
-    { x1: 75,  y1: 550, x2: 115, y2: 585, flash: 0 },
-    { x1: 305, y1: 550, x2: 265, y2: 585, flash: 0 },
+    { x1: 50,  y1: 550, x2: 115, y2: 610, flash: 0 },
+    { x1: 330, y1: 550, x2: 265, y2: 610, flash: 0 },
 ];
 
 export function arcSegments(center, r, a0, a1, steps) {
@@ -80,6 +80,27 @@ const OUTLANE_INSET = 28;
 // outlanen. Några pixlar extra luft löser det.
 const OUTLANE_GAP = 30;
 
+// Utlopp (outlanes) — tajta kanaler tätt intill väggen (vänster) och
+// skjutbanans skiljevägg (höger, för att inte krocka med rampen — den
+// kan därför inte börja lika långt ut som vänstersidans väggkant gör).
+// Hamnar bollen här går den rakt förbi flippern istället för att fångas
+// upp av huvudguiden ovan.
+// y1 = H-115 (inte H-150) så den inte börjar i samma höjd som huvudguiden
+// ovan — vid H-150 ligger de bara ~1px isär horisontellt (samma klämma
+// som vägg/outlane-buggen, fast mellan två guider). Vid H-115 har
+// huvudguiden redan svängt undan ~37px innan outlane-guiden ens existerar,
+// gott och väl mer än de 26px (2×(BALL_R+GUIDE_R)) en boll behöver för
+// att inte nypas mellan dem.
+// Egen export (inte bara del av guides) — main.js behöver känna igen just
+// dessa specifikt för att veta om en boll faktiskt varit i outlanen nyligen
+// innan kickback-rännan får räknas som en riktig räddning (annars slår den
+// till även på bollar som bara råkar rulla nära dess ände, t.ex. vid ett
+// vanligt center-drain mellan flipprarna).
+export const outlaneGuides = [
+    { x1: WALL + OUTLANE_GAP,           y1: H - 115, x2: WALL + OUTLANE_INSET,           y2: H - 20 },
+    { x1: LANE_DIVIDER_X - OUTLANE_GAP, y1: H - 115, x2: LANE_DIVIDER_X - OUTLANE_INSET, y2: H - 20 },
+];
+
 export const guides = [
     // Huvudguidernas start är kortad ~30px från väggkanten/skiljeväggen —
     // annars delar de startpunkt exakt med outlane-guiderna nedan, och
@@ -90,19 +111,7 @@ export const guides = [
     // Spegling av vänsterguiden ovan
     { x1: 335, y1: H - 150, x2: TABLE_CENTER_X + FLIPPER_HALF_SPAN, y2: H - 90 },
 
-    // Utlopp (outlanes) — tajta kanaler tätt intill väggen (vänster) och
-    // skjutbanans skiljevägg (höger, för att inte krocka med rampen — den
-    // kan därför inte börja lika långt ut som vänstersidans väggkant gör).
-    // Hamnar bollen här går den rakt förbi flippern istället för att fångas
-    // upp av huvudguiden ovan.
-    // y1 = H-115 (inte H-150) så den inte börjar i samma höjd som
-    // huvudguiden ovan — vid H-150 ligger de bara ~1px isär horisontellt
-    // (samma klämma som vägg/outlane-buggen, fast mellan två guider). Vid
-    // H-115 har huvudguiden redan svängt undan ~37px innan outlane-guiden
-    // ens existerar, gott och väl mer än de 26px (2×(BALL_R+GUIDE_R)) en
-    // boll behöver för att inte nypas mellan dem.
-    { x1: WALL + OUTLANE_GAP,           y1: H - 115, x2: WALL + OUTLANE_INSET,           y2: H - 20 },
-    { x1: LANE_DIVIDER_X - OUTLANE_GAP, y1: H - 115, x2: LANE_DIVIDER_X - OUTLANE_INSET, y2: H - 20 },
+    ...outlaneGuides,
 
     // Halvcirkelbåge över hela toppen
     ...arcSegments(laneCurveCenter, LANE_CURVE_R, 0, -Math.PI, 32),

@@ -1,6 +1,6 @@
-import { G, MAX_SPEED, BALL_R, WALL, W, H, SUBSTEP_DIST, FLIP_SPEED, LAUNCH_RATE, DYING_FRAMES, LANE_DIVIDER_X, LAUNCH_MAX_VY, PLUNGER_X, PLUNGER_Y } from './constants.js';
-import { flippers, bumpers, guides, slingshots, laneGate, posts, kickbacks } from './entities.js';
-import { collideFlipper, collideBumper, collideGuide, collideSlingshot, collidePost } from './physics.js';
+import { G, MAX_SPEED, BALL_R, GUIDE_R, WALL, W, H, SUBSTEP_DIST, FLIP_SPEED, LAUNCH_RATE, DYING_FRAMES, LANE_DIVIDER_X, LAUNCH_MAX_VY, PLUNGER_X, PLUNGER_Y } from './constants.js';
+import { flippers, bumpers, guides, slingshots, laneGate, posts, kickbacks, outlaneGuides } from './entities.js';
+import { collideFlipper, collideBumper, collideGuide, collideSlingshot, collidePost, closestPointOnSegment } from './physics.js';
 import { game, handleDrain, ballReturnedToPlunger, launchBall } from './state.js';
 import { keys, leftDown, rightDown } from './input.js';
 import { tickBallSave } from './ballSave.js';
@@ -37,12 +37,25 @@ function decayShake() {
     if (Math.abs(game.shake.y) < 0.05) game.shake.y = 0;
 }
 
-const KICKBACK_CATCH_R = 20;
+const KICKBACK_CATCH_R  = 20;
+// Hur länge (i bildrutor) en snuddning på outlanen "räknas" innan kickback-
+// rännan får utlösa en räddning. Utan den här spärren triggade rännans
+// ände (som av layoutskäl ligger nära vänsterflipperns pivot) även på
+// bollar som aldrig varit i outlanen, bara rullat nära flippern på väg
+// till ett helt vanligt center-drain mellan flipprarna.
+const OUTLANE_GRACE_FRAMES = 20;
+
+function touchesSegment(b, seg, extra = 1) {
+    const cp = closestPointOnSegment(b.x, b.y, seg.x1, seg.y1, seg.x2, seg.y2);
+    return Math.hypot(b.x - cp.x, b.y - cp.y) < BALL_R + GUIDE_R + extra;
+}
 
 // Fångar en boll som hittat in i kickback-rännan (se entities.js) och nått
-// dess bortre ände — räknas inte som drain, utan skickas tillbaka till
-// plungern precis som en boll som rullat tillbaka i skjutbanan.
+// dess bortre ände — men bara om bollen faktiskt snuddat outlanen nyligen,
+// se OUTLANE_GRACE_FRAMES. Räknas inte som drain, utan skickas tillbaka
+// till plungern precis som en boll som rullat tillbaka i skjutbanan.
 function checkKickback(b) {
+    if (!b.outlaneGrace) return false;
     for (const k of kickbacks) {
         if (Math.hypot(b.x - k.x2, b.y - k.y2) < KICKBACK_CATCH_R) {
             k.flash = 12;
@@ -51,6 +64,7 @@ function checkKickback(b) {
             b.vx = 0;
             b.vy = 0;
             b.waiting = true;
+            b.outlaneGrace = 0;
             ballReturnedToPlunger();
             return true;
         }
@@ -126,11 +140,16 @@ function update(dtFactor = 1) {
         for (const k   of kickbacks)  collideGuide(b, k);
         for (const g   of guides)     collideGuide(b, g);
         for (const f   of flippers)   collideFlipper(b, f);
+
+        for (const og of outlaneGuides) {
+            if (touchesSegment(b, og)) b.outlaneGrace = OUTLANE_GRACE_FRAMES;
+        }
     }
 
     for (const bmp of bumpers)    { if (bmp.flash > 0) bmp.flash--; }
     for (const sl  of slingshots) { if (sl.flash  > 0) sl.flash--;  }
     for (const k   of kickbacks)  { if (k.flash   > 0) k.flash--;   }
+    if (b.outlaneGrace > 0) b.outlaneGrace--;
 
     if (checkKickback(b)) return;
     if (checkLaunchReturn(b)) return;

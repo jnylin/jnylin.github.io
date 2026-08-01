@@ -36,7 +36,7 @@ export function updateUI() {
 }
 
 function spawnBall(vy) {
-    game.ball = { x: PLUNGER_X, y: PLUNGER_Y, vx: (Math.random() - 0.5) * 2, vy, dying: false, dyingTimer: 0, waiting: false, hasEscaped: false };
+    game.ball = { x: PLUNGER_X, y: PLUNGER_Y, vx: (Math.random() - 0.5) * 2, vy, dying: false, dyingTimer: 0, waiting: false, hasEscaped: false, outlaneGrace: 0 };
 }
 
 export function launchBall() {
