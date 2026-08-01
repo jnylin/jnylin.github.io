@@ -29,7 +29,7 @@ export const DYING_FRAMES    = 25;
 
 // --- Slingshots ---
 export const SLINGSHOT_R            = 6;
-export const SLINGSHOT_KICK         = 10; // tidigare 14
+export const SLINGSHOT_KICK         = 6;
 export const SLINGSHOT_FLASH_FRAMES = 12;
 
 // --- Ball-save ---
