@@ -31,6 +31,12 @@ header p {
 .header-actions {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.lang-switch {
+    white-space: nowrap;
 }
 
 /* Rubriker */
@@ -192,7 +198,8 @@ footer {
         display: none;
     }
 
-    .print-button {
+    .print-button,
+    .lang-switch {
         display: none;
     }
 }
