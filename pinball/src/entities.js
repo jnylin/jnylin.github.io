@@ -54,8 +54,8 @@ export const slingshots = [
 // och när den når rännans bortre ände räknas det inte som drain, utan
 // bollen skickas tillbaka till plungern för en omskjutning (main.js).
 export const kickbacks = [
-    { x1: 50,  y1: 550, x2: 115, y2: 610, flash: 0 },
-    { x1: 330, y1: 550, x2: 265, y2: 610, flash: 0 },
+    { x1: 40,  y1: 543, x2: 115, y2: 620, flash: 0 },
+    { x1: 340, y1: 543, x2: 265, y2: 620, flash: 0 },
 ];
 
 export function arcSegments(center, r, a0, a1, steps) {
