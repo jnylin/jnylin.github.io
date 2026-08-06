@@ -13,7 +13,6 @@ let highScore = parseInt(localStorage.getItem('pinball-hi') || '0', 10);
 hiEl.textContent = highScore.toLocaleString();
 
 // --- Speltillstånd ---
-// Utökat med shake (för rendering), nudgeCount och tilted
 export const game = { 
     score: 0, 
     ballsLeft: 3, 
@@ -61,6 +60,7 @@ export function relaunchBall() {
     b.vx = (Math.random() - 0.5) * 2;
     b.vy = -pwr * LAUNCH_MAX_VY;
     b.waiting = false;
+    b.hasEscaped = false;
     startBallSave();
     playLaunch(pwr);
     msgEl.textContent = '← → eller A D för flipprar';
