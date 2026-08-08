@@ -66,6 +66,19 @@ export function relaunchBall() {
     msgEl.textContent = '← → eller A D för flipprar';
 }
 
+export function triggerLaunch() {
+    // Om spelet är slut eller laddningen är för svag gör vi ingenting
+    if (game.over || game.launchPower < 0.1) return;
+
+    if (!game.ball && game.ballsLeft > 0) {
+        console.log("launching ball");
+        launchBall();
+    } else if (game.ball && game.ball.waiting) {
+        console.log("relaunching ball");
+        relaunchBall();
+    }
+}
+
 export function ballReturnedToPlunger() {
     msgEl.textContent = 'Bollen rullade tillbaka — håll Space för att ladda om';
 }

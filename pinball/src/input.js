@@ -1,5 +1,5 @@
 import { initAudio, playFlipperHit } from './audio.js';
-import { game, resetGame, launchBall, relaunchBall, nudgeGame } from './state.js';
+import { game, resetGame, launchBall, relaunchBall, triggerLaunch, nudgeGame } from './state.js';
 
 // --- Inmatning ---
 export const keys = {};
@@ -42,12 +42,8 @@ document.addEventListener('keyup', e => {
     keys[e.code] = false;
 
     // Skjuta iväg kulan
-    if (e.code === 'Space' && !game.over && game.launchPower >= 0.1) {
-        if (!game.ball && game.ballsLeft > 0) {
-            launchBall();
-        } else if (game.ball && game.ball.waiting) {
-            relaunchBall();
-        }
+    if (e.code === 'Space') {
+        triggerLaunch();
     }
 });
 
@@ -77,12 +73,8 @@ function releaseTouch(id) {
     if (!state) return;
     touches.delete(id);
 
-    if (state.mode === 'drag' && !game.over && game.launchPower >= 0.1) {
-        if (!game.ball && game.ballsLeft > 0) {
-            launchBall();
-        } else if (game.ball && game.ball.waiting) {
-            relaunchBall();
-        }
+    if (state.mode === 'drag') {
+        triggerLaunch();
     }
 }
 
