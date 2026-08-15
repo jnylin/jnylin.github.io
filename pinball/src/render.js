@@ -3,6 +3,7 @@ import { flippers, bumpers, guides, slingshots, laneGate, posts, kickbacks } fro
 import { game } from './state.js';
 import { isBallSaveActive, ballSaveFraction } from './ballSave.js';
 import { comboMultiplier, comboFraction } from './combo.js';
+import { drawParticles } from './particles.js';
 
 const canvas = document.getElementById('c');
 const ctx    = canvas.getContext('2d');
@@ -44,6 +45,8 @@ function drawPosts() {
 function drawBumpers() {
     for (const b of bumpers) {
         const lit = b.flash > 0;
+        ctx.save();
+        if (lit) { ctx.shadowColor = '#ff3366'; ctx.shadowBlur = 16; }
         ctx.beginPath();
         ctx.arc(b.x, b.y, b.r, 0, Math.PI*2);
         ctx.fillStyle   = lit ? '#ff3366'               : '#3d1a2e';
@@ -51,6 +54,7 @@ function drawBumpers() {
         ctx.strokeStyle = lit ? '#ff6688'               : '#7f1d4a';
         ctx.lineWidth   = 2;
         ctx.stroke();
+        ctx.restore();
         ctx.beginPath();
         ctx.arc(b.x - b.r*0.3, b.y - b.r*0.3, b.r*0.3, 0, Math.PI*2);
         ctx.fillStyle   = lit ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.1)';
@@ -62,12 +66,15 @@ function drawSlingshots() {
     ctx.lineCap = 'round';
     for (const s of slingshots) {
         const lit = s.flash > 0;
+        ctx.save();
+        if (lit) { ctx.shadowColor = '#fff35c'; ctx.shadowBlur = 14; }
         ctx.strokeStyle = lit ? '#fff35c' : '#8a7a2a';
         ctx.lineWidth   = SLINGSHOT_R * 2;
         ctx.beginPath();
         ctx.moveTo(s.x1, s.y1);
         ctx.lineTo(s.x2, s.y2);
         ctx.stroke();
+        ctx.restore();
     }
 }
 
@@ -75,12 +82,15 @@ function drawKickbacks() {
     ctx.lineCap = 'round';
     for (const k of kickbacks) {
         const lit = k.flash > 0;
+        ctx.save();
+        if (lit) { ctx.shadowColor = '#7dd3fc'; ctx.shadowBlur = 14; }
         ctx.strokeStyle = lit ? '#7dd3fc' : '#1e4a5f';
         ctx.lineWidth   = 6;
         ctx.beginPath();
         ctx.moveTo(k.x1, k.y1);
         ctx.lineTo(k.x2, k.y2);
         ctx.stroke();
+        ctx.restore();
     }
 }
 
@@ -88,9 +98,13 @@ function drawFlipper(f) {
     const tipX = f.px + Math.cos(f.angle)*FLIP_LEN;
     const tipY = f.py + Math.sin(f.angle)*FLIP_LEN;
     ctx.lineCap = 'round';
+    ctx.save();
+    ctx.shadowColor = '#00ffcc';
+    ctx.shadowBlur  = f.isMovingUp ? 18 : 6;
     ctx.strokeStyle = '#00ffcc';
     ctx.lineWidth   = FLIP_R * 2;
     ctx.beginPath(); ctx.moveTo(f.px, f.py); ctx.lineTo(tipX, tipY); ctx.stroke();
+    ctx.restore();
     ctx.globalCompositeOperation = 'destination-over';
     ctx.strokeStyle = '#005544';
     ctx.lineWidth   = FLIP_R * 2 + 2;
@@ -113,10 +127,14 @@ function drawBall() {
         return;
     }
 
+    ctx.save();
+    ctx.shadowColor = 'rgba(232,200,64,0.8)';
+    ctx.shadowBlur  = 8;
     ctx.beginPath();
     ctx.arc(b.x, b.y, BALL_R, 0, Math.PI*2);
     ctx.fillStyle = '#e8c840';
     ctx.fill();
+    ctx.restore();
     ctx.beginPath();
     ctx.arc(b.x - 3, b.y - 3, BALL_R * 0.35, 0, Math.PI*2);
     ctx.fillStyle = 'rgba(255,255,255,0.6)';
@@ -196,6 +214,7 @@ export function draw() {
     drawKickbacks();
     drawSlingshots();
     for (const f of flippers) drawFlipper(f);
+    drawParticles(ctx);
     drawBall();
     drawPlunger();
     drawBallSaveIndicator();

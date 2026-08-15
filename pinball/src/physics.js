@@ -3,6 +3,7 @@ import { leftDown, rightDown } from './input.js';
 import { playBumperHit, playSlingshotHit } from './audio.js';
 import { game, updateUI } from './state.js';
 import { registerHit } from './combo.js';
+import { spawnSpark, spawnScorePopup } from './particles.js';
 
 // --- Hjälpfunktioner för fysik ---
 export function closestPointOnSegment(px, py, ax, ay, bx, by) {
@@ -38,6 +39,7 @@ export function collideFlipper(ball, f) {
             b.vy = (b.vy - 2 * dot * ny) * 1.8;
 
             if (b.vy > -2) b.vy -= 4;
+            spawnSpark(b.x, b.y, '#00ffcc', 6);
         } else {
             // Stillastående flipper (oavsett om den hålls uppe i toppläget eller ligger i viloläge):
             // Bara normalkomponenten dämpas så att bollen kan rulla snyggt längs flippern.
@@ -52,14 +54,17 @@ export function collideBumper(ball, b) {
     const dist = Math.hypot(dx, dy);
     const min  = BALL_R + b.r;
     if (dist >= min || dist < 0.01) return;
-    const mult = registerHit();
-    game.score += Math.round(50 * mult);
+    const mult  = registerHit();
+    const gain  = Math.round(50 * mult);
+    game.score += gain;
     updateUI();
     b.flash = 18;
     playBumperHit();
     const nx    = dx/dist, ny = dy/dist;
     ball.x      = b.x + nx * min;
     ball.y      = b.y + ny * min;
+    spawnSpark(ball.x, ball.y, '#ff6688');
+    spawnScorePopup(ball.x, ball.y - 18, gain);
     // 15% dämpning per studs — annars konserverar bumpern farten nästan
     // exakt och bollen kan studsa runt bumper-triangeln snabbt utan att
     // tappa fart (0.9 kändes för kraftigt över flera studsar i klustret).
@@ -108,9 +113,12 @@ export function collideSlingshot(ball, s) {
         b.vx = Math.cos(ang) * speed;
         b.vy = Math.sin(ang) * speed;
         s.flash = SLINGSHOT_FLASH_FRAMES;
-        const mult = registerHit();
-        game.score += Math.round(10 * mult);
+        const mult  = registerHit();
+        const gain  = Math.round(10 * mult);
+        game.score += gain;
         updateUI();
         playSlingshotHit();
+        spawnSpark(b.x, b.y, '#fff35c');
+        spawnScorePopup(b.x, b.y - 18, gain);
     });
 }

@@ -5,6 +5,7 @@ import { game, handleDrain, ballReturnedToPlunger, launchBall } from './state.js
 import { keys, leftDown, rightDown } from './input.js';
 import { tickBallSave } from './ballSave.js';
 import { tickCombo } from './combo.js';
+import { tickParticles } from './particles.js';
 import { draw } from './render.js';
 
 // --- Uppdatera speltillstånd ---
@@ -91,6 +92,7 @@ function checkLaunchReturn(b) {
 function update(dtFactor = 1) {
     updateFlippers();
     decayShake();
+    tickParticles();
 
     // 1. Ladda skottet när Space hålls nere (Tangenthantering)
     const chargeable = (!game.ball || game.ball.waiting) && !game.over;
