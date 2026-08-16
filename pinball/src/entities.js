@@ -39,7 +39,7 @@ export const bumpers = [
 // bågen — utan något i vägen glider den bara rakt ner i vänster outlane.
 // Stolpen sitter i den korridoren och kastar in bollen mot bumparna istället.
 export const posts = [
-    { x: 40, y: 160, r: 12 },
+    { x: 40, y: 290, r: 12 },
 ];
 
 // --- Slingshots ---
@@ -48,7 +48,7 @@ export const posts = [
 // löper längs sidoväggen ner mot draget) för att fånga upp och studsa
 // tillbaka bollar som annars gled rakt ner i outlanen utan motstånd.
 export const slingshots = [
-    { x1: 47,     y1: H - 234, x2: 80,     y2: H - 185, flash: 0 },
+    { x1: 47,     y1: H - 234, x2: 70,     y2: H - 185, flash: 0 },
     { x1: W - 87, y1: H - 234, x2: W - 110, y2: H - 185, flash: 0 },
 ];
 
