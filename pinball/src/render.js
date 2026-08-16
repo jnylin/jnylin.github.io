@@ -45,13 +45,19 @@ function drawPosts() {
 function drawBumpers() {
     for (const b of bumpers) {
         const lit = b.flash > 0;
+        // Specialbumpern får en egen lila palett så den syns som ett eget
+        // mål även släckt, inte bara när den precis blivit träffad.
+        const litFill   = b.special ? '#c084fc' : '#ff3366';
+        const darkFill  = b.special ? '#3b0764' : '#3d1a2e';
+        const litStroke = b.special ? '#e9d5ff' : '#ff6688';
+        const darkStroke= b.special ? '#7e22ce' : '#7f1d4a';
         ctx.save();
-        if (lit) { ctx.shadowColor = '#ff3366'; ctx.shadowBlur = 16; }
+        if (lit) { ctx.shadowColor = litFill; ctx.shadowBlur = 16; }
         ctx.beginPath();
         ctx.arc(b.x, b.y, b.r, 0, Math.PI*2);
-        ctx.fillStyle   = lit ? '#ff3366'               : '#3d1a2e';
+        ctx.fillStyle   = lit ? litFill   : darkFill;
         ctx.fill();
-        ctx.strokeStyle = lit ? '#ff6688'               : '#7f1d4a';
+        ctx.strokeStyle = lit ? litStroke : darkStroke;
         ctx.lineWidth   = 2;
         ctx.stroke();
         ctx.restore();

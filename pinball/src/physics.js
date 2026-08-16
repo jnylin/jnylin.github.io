@@ -39,7 +39,6 @@ export function collideFlipper(ball, f) {
             b.vy = (b.vy - 2 * dot * ny) * 1.8;
 
             if (b.vy > -2) b.vy -= 4;
-            spawnSpark(b.x, b.y, '#00ffcc', 6);
         } else {
             // Stillastående flipper (oavsett om den hålls uppe i toppläget eller ligger i viloläge):
             // Bara normalkomponenten dämpas så att bollen kan rulla snyggt längs flippern.
@@ -55,7 +54,7 @@ export function collideBumper(ball, b) {
     const min  = BALL_R + b.r;
     if (dist >= min || dist < 0.01) return;
     const mult  = registerHit();
-    const gain  = Math.round(50 * mult);
+    const gain  = Math.round((b.special ? 100 : 50) * mult);
     game.score += gain;
     updateUI();
     b.flash = 18;
@@ -63,7 +62,7 @@ export function collideBumper(ball, b) {
     const nx    = dx/dist, ny = dy/dist;
     ball.x      = b.x + nx * min;
     ball.y      = b.y + ny * min;
-    spawnSpark(ball.x, ball.y, '#ff6688');
+    if (b.special) spawnSpark(ball.x, ball.y, '#c084fc');
     spawnScorePopup(ball.x, ball.y - 18, gain);
     // 15% dämpning per studs — annars konserverar bumpern farten nästan
     // exakt och bollen kan studsa runt bumper-triangeln snabbt utan att
@@ -118,7 +117,6 @@ export function collideSlingshot(ball, s) {
         game.score += gain;
         updateUI();
         playSlingshotHit();
-        spawnSpark(b.x, b.y, '#fff35c');
         spawnScorePopup(b.x, b.y - 18, gain);
     });
 }

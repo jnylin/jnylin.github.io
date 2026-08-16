@@ -24,8 +24,13 @@ export const flippers = [
 // Samma triangel som förut, omcentrerad 20px åt vänster kring TABLE_CENTER_X.
 export const bumpers = [
     { x: 120, y: 200, r: 20, flash: 0 },
-    { x: 260, y: 180, r: 20, flash: 0 },
+    { x: 240, y: 170, r: 20, flash: 0 },
     { x: 190, y: 280, r: 20, flash: 0 },
+    // Egen specialbumper, medvetet utanför triangeln (öppet fält till höger,
+    // ovanför slingshotens diagonal) — ger mer poäng och är den enda med
+    // gnisteffekt, så den sticker ut som ett tydligt mål istället för att
+    // gnistor duggar tätt över hela klustret.
+    { x: 340, y: 230, r: 18, flash: 0, special: true },
 ];
 
 // --- Stolpar ---
@@ -34,7 +39,7 @@ export const bumpers = [
 // bågen — utan något i vägen glider den bara rakt ner i vänster outlane.
 // Stolpen sitter i den korridoren och kastar in bollen mot bumparna istället.
 export const posts = [
-    { x: 40, y: 230, r: 14 },
+    { x: 40, y: 160, r: 12 },
 ];
 
 // --- Slingshots ---
