@@ -173,6 +173,27 @@ footer {
     margin: 0;
 }
 
+.degree-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* Rejäl luft MLLAN två olika examina */
+    margin: 0;
+    padding: 0;
+}
+
+.degree-item dt {
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: #ffffff;
+    margin-bottom: 2px; /* Mycket tajt koppling till beskrivningen */
+}
+
+.degree-item dd {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #a0a0a0;
+}
+
 @media (max-width: 500px) {
     .tech-stack {
         grid-template-columns: 1fr;
@@ -207,8 +228,15 @@ footer {
         display: none;
     }
 
-    .print-button,
+    #print-button,
     .lang-switch {
         display: none;
+    }
+
+    .degree-list dt {
+        color: black;
+    }
+    .degree-list dd {
+        color: #333;
     }
 }
