@@ -102,6 +102,35 @@ export function collideGuide(ball, g) {
     });
 }
 
+// Bågen som bildar takets halvcirkel (laneCurveArc i entities.js) hanteras
+// som en riktig cirkel istället för sina 32 rit-segment, se kommentaren
+// vid laneCurveSegments — annars kan bollen träffa två grannsegment med
+// olika normaler i samma bildruta och få en skevande stöt.
+export function collideArc(ball, arc, segR, onHit) {
+    const dx = ball.x - arc.center.x, dy = ball.y - arc.center.y;
+    if (dy > 0) return; // bara övre halvan av bågen är i bruk
+    const dist = Math.hypot(dx, dy);
+    if (dist < 0.01) return;
+    const diff = dist - arc.r; // positivt = utanför bågen, negativt = innanför
+    const min  = BALL_R + segR;
+    if (Math.abs(diff) >= min) return;
+    const sign = diff >= 0 ? 1 : -1;
+    const ux   = dx/dist, uy = dy/dist;
+    const nx   = sign * ux, ny = sign * uy;
+    ball.x = arc.center.x + ux * (arc.r + sign*min);
+    ball.y = arc.center.y + uy * (arc.r + sign*min);
+    onHit(ball, nx, ny, ball.vx*nx + ball.vy*ny);
+}
+
+export function collideLaneCurve(ball, arc) {
+    collideArc(ball, arc, GUIDE_R, (b, nx, ny, dot) => {
+        if (dot < 0) {
+            b.vx -= 1.7 * dot * nx;
+            b.vy -= 1.7 * dot * ny;
+        }
+    });
+}
+
 export function collideSlingshot(ball, s) {
     reflectBallOffSegment(ball, s.x1, s.y1, s.x2, s.y2, SLINGSHOT_R, (b, nx, ny, dot) => {
         if (dot >= 0) return;

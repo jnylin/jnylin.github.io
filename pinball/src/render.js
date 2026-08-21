@@ -1,5 +1,5 @@
 import { W, H, WALL, BALL_R, FLIP_LEN, FLIP_R, SLINGSHOT_R, PLUNGER_X, PLUNGER_Y, DYING_FRAMES } from './constants.js';
-import { flippers, bumpers, guides, slingshots, laneGate, posts, kickbacks } from './entities.js';
+import { flippers, bumpers, guides, laneCurveSegments, slingshots, laneGate, posts, kickbacks } from './entities.js';
 import { game } from './state.js';
 import { isBallSaveActive, ballSaveFraction } from './ballSave.js';
 import { comboMultiplier, comboFraction } from './combo.js';
@@ -14,7 +14,7 @@ function drawWalls() {
     ctx.fillRect(W - WALL, 0, WALL, H);
     ctx.strokeStyle = '#475569';
     ctx.lineWidth   = 2;
-    for (const g of guides) {
+    for (const g of [...guides, ...laneCurveSegments]) {
         ctx.beginPath();
         ctx.moveTo(g.x1, g.y1);
         ctx.lineTo(g.x2, g.y2);

@@ -1,6 +1,6 @@
 import { G, MAX_SPEED, BALL_R, GUIDE_R, WALL, W, H, SUBSTEP_DIST, FLIP_SPEED, LAUNCH_RATE, DYING_FRAMES, LANE_DIVIDER_X, LAUNCH_MAX_VY, PLUNGER_X, PLUNGER_Y } from './constants.js';
-import { flippers, bumpers, guides, slingshots, laneGate, posts, kickbacks, outlaneGuides } from './entities.js';
-import { collideFlipper, collideBumper, collideGuide, collideSlingshot, collidePost, closestPointOnSegment } from './physics.js';
+import { flippers, bumpers, guides, slingshots, laneGate, posts, kickbacks, outlaneGuides, laneCurveArc } from './entities.js';
+import { collideFlipper, collideBumper, collideGuide, collideSlingshot, collidePost, collideLaneCurve, closestPointOnSegment } from './physics.js';
 import { game, handleDrain, ballReturnedToPlunger, launchBall } from './state.js';
 import { keys, leftDown, rightDown } from './input.js';
 import { tickBallSave } from './ballSave.js';
@@ -141,6 +141,7 @@ function update(dtFactor = 1) {
         for (const sl  of slingshots) collideSlingshot(b, sl);
         for (const k   of kickbacks)  collideGuide(b, k);
         for (const g   of guides)     collideGuide(b, g);
+        collideLaneCurve(b, laneCurveArc);
         for (const f   of flippers)   collideFlipper(b, f);
 
         for (const og of outlaneGuides) {

@@ -118,12 +118,22 @@ export const guides = [
 
     ...outlaneGuides,
 
-    // Halvcirkelbåge över hela toppen
-    ...arcSegments(laneCurveCenter, LANE_CURVE_R, 0, -Math.PI, 32),
-
     // Skiljevägg för skjutbanan
     { x1: LANE_DIVIDER_X, y1: LANE_TOP, x2: LANE_DIVIDER_X, y2: H },
 ];
+
+// Halvcirkelbåge över hela toppen. Enbart för rendering — kollisionen mot
+// den körs som en enda exakt cirkel (se laneCurveArc/collideArc i
+// physics.js), inte mot dessa 32 korda-segment. Varje korda är ~19px lång
+// medan bollens kollisionsmarginal (BALL_R+GUIDE_R) är 13px, så bollen
+// kunde ligga nära nog för att träffa TVÅ grannsegment samma bildruta —
+// och eftersom deras normaler skiljer sig åt lite fick bollen en skevande
+// stöt istället för en enda ren studs, vilket kändes som att den tappade
+// gravitationen och kastades sida till sida i bågen.
+export const laneCurveSegments = arcSegments(laneCurveCenter, LANE_CURVE_R, 0, -Math.PI, 32);
+
+// Samma båge, som en riktig cirkel för fysiken.
+export const laneCurveArc = { center: laneCurveCenter, r: LANE_CURVE_R };
 
 // --- Envägsgrind vid skjutbanans mynning ---
 // Tätar öppningen där skjutbanan möter planet ovanför skiljeväggen. Bollen
