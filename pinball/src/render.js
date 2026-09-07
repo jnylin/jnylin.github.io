@@ -1,8 +1,6 @@
 import { W, H, WALL, BALL_R, FLIP_LEN, FLIP_R, SLINGSHOT_R, PLUNGER_X, PLUNGER_Y, DYING_FRAMES } from './constants.js';
 import { flippers, bumpers, guides, laneCurveSegments, slingshots, laneGate, posts, kickbacks } from './entities.js';
-import { game } from './state.js';
-import { isBallSaveActive, ballSaveFraction } from './ballSave.js';
-import { comboMultiplier, comboFraction } from './combo.js';
+import { game, isBallSaveActive, ballSaveFraction, comboMultiplier, comboFraction } from './state.js';
 import { drawParticles } from './particles.js';
 
 const canvas = document.getElementById('c');

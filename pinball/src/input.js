@@ -1,5 +1,5 @@
 import { initAudio, playFlipperHit } from './audio.js';
-import { game, resetGame, launchBall, relaunchBall, triggerLaunch, nudgeGame } from './state.js';
+import { game, resetGame, triggerLaunch, nudgeGame, setLaunchPower } from './state.js';
 
 // --- Inmatning ---
 export const keys = {};
@@ -147,7 +147,7 @@ document.addEventListener('touchmove', e => {
         if (state.mode === 'drag') {
             const chargeable = (!game.ball || game.ball.waiting) && !game.over;
             if (chargeable) {
-                game.launchPower = Math.max(0, Math.min(1, (dy - DRAG_THRESHOLD) / DRAG_RANGE));
+                setLaunchPower(Math.max(0, Math.min(1, (dy - DRAG_THRESHOLD) / DRAG_RANGE)));
             }
         }
     }
