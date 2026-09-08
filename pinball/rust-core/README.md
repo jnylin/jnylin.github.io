@@ -33,3 +33,10 @@ This requires `wasm-bindgen-cli` installed at the exact version pinned in
 version produces JS glue that fails to load:
 
     cargo install wasm-bindgen-cli --version 0.2.128 --locked
+
+It also runs the result through `wasm-opt` (from
+[binaryen](https://github.com/WebAssembly/binaryen), e.g.
+`npm install -g binaryen`) if it's on PATH — shrinks the shipped `.wasm` by
+~35-40% (size-focused release profile in `Cargo.toml` plus `wasm-opt -Oz`
+gets it from ~91KB down to ~55KB as of this writing). Optional: the build
+still works without it, just larger.
