@@ -27,7 +27,13 @@
             <span>Bollar: <b id="balls">3</b></span>
             <span>Bäst: <b id="hi">0</b></span>
         </div>
-        <canvas id="c" width="420" height="660"></canvas>
+        <div id="table-wrap">
+            <canvas id="c" width="420" height="660"></canvas>
+            <div id="loading">
+                <div class="spinner"></div>
+                <span>Laddar…</span>
+            </div>
+        </div>
         <div id="msg">← → / A D eller tryck vänster/höger skärmhalva &nbsp;|&nbsp; Space eller dra nedåt för ny boll</div>
         <script type="module" src="src/main.js"></script>
     </body>

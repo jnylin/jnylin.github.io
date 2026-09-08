@@ -32,5 +32,10 @@ function loop(currentTime) {
     requestAnimationFrame(loop);
 }
 
+// Vid det här laget har state.js's top-level await på wasm-corets init()
+// redan löst ut (main.js kör inte förrän sina importer gjort det), så
+// spelet är redo att börja rita.
+document.getElementById('loading')?.classList.add('hidden');
+
 // Starta spelloopen
 requestAnimationFrame(loop);
