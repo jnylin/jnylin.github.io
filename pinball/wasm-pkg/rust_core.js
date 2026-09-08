@@ -156,6 +156,26 @@ export class PinballApi {
         return ret;
     }
     /**
+     * The full static table layout as JSON — call once at startup, not
+     * per frame (see the module doc comment). `lane_curve_segments` is the
+     * only piece not already sitting on `World`; it's rendering-only
+     * (physics collides against the exact arc, `lane_curve_arc`, instead),
+     * so it's just rebuilt from `entities::lane_curve_segments()` here.
+     * @returns {string}
+     */
+    layout() {
+        let deferred1_0;
+        let deferred1_1;
+        try {
+            const ret = wasm.pinballapi_layout(this.__wbg_ptr);
+            deferred1_0 = ret[0];
+            deferred1_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+        }
+    }
+    /**
      * `high_score` should come from `localStorage` on the JS side — this
      * crate never touches storage (see `state.rs`'s doc comment).
      * @param {number} high_score

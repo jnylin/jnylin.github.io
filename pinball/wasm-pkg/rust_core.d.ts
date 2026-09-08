@@ -25,6 +25,14 @@ export class PinballApi {
     kickback_flash(i: number): number;
     launch_power(): number;
     /**
+     * The full static table layout as JSON — call once at startup, not
+     * per frame (see the module doc comment). `lane_curve_segments` is the
+     * only piece not already sitting on `World`; it's rendering-only
+     * (physics collides against the exact arc, `lane_curve_arc`, instead),
+     * so it's just rebuilt from `entities::lane_curve_segments()` here.
+     */
+    layout(): string;
+    /**
      * `high_score` should come from `localStorage` on the JS side — this
      * crate never touches storage (see `state.rs`'s doc comment).
      */
@@ -85,6 +93,7 @@ export interface InitOutput {
     readonly pinballapi_kickback_count: (a: number) => number;
     readonly pinballapi_kickback_flash: (a: number, b: number) => number;
     readonly pinballapi_launch_power: (a: number) => number;
+    readonly pinballapi_layout: (a: number) => [number, number];
     readonly pinballapi_new: (a: number) => number;
     readonly pinballapi_nudge: (a: number, b: number, c: number) => [number, number];
     readonly pinballapi_over: (a: number) => number;

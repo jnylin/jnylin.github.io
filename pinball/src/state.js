@@ -1,10 +1,14 @@
-// The game engine now lives in rust-core (see wasm_api.rs, world.rs,
-// state.rs) — this module owns the one PinballApi instance, mirrors its
-// state into the plain `game` object render.js/audio.js already read (so
-// those files needed no changes), and translates the JSON events it
-// returns into the same sounds/particles/message text the old pure-JS
-// version produced directly.
-import { flippers, bumpers, slingshots, kickbacks } from './entities.js';
+// The game engine — and the table layout itself — now live in rust-core
+// (see wasm_api.rs, world.rs, state.rs, entities.rs). This module owns the
+// one PinballApi instance, mirrors its state into the plain `game` object
+// and entity arrays render.js/audio.js already read, and translates the
+// JSON events it returns into the same sounds/particles/message text the
+// old pure-JS version produced directly.
+//
+// entities.js used to hand-duplicate every bumper/flipper/guide position
+// that entities.rs also defines for collision — nothing enforced the two
+// copies stayed in sync. It's gone; layout now comes from api.layout()
+// below, so entities.rs is the only place table layout is ever written.
 import { playBumperHit, playSlingshotHit, playDrain, playLaunch, playBallSave } from './audio.js';
 import { spawnSpark, spawnScorePopup } from './particles.js';
 import { loadWasm } from './wasmBridge.js';
@@ -22,6 +26,20 @@ hiEl.textContent = highScore.toLocaleString();
 
 const PinballApi = await loadWasm();
 const api = new PinballApi(highScore);
+
+// --- Bordslayout ---
+// Hämtad en gång vid start (positionerna är statiska) — se entities.rs.
+// syncEntities() nedan lägger sen till de fält som faktiskt ändras
+// bildruta för bildruta (angle/isMovingUp/flash) direkt på de här objekten.
+const layout = JSON.parse(api.layout());
+export const flippers   = layout.flippers;
+export const bumpers    = layout.bumpers;
+export const posts      = layout.posts;
+export const slingshots = layout.slingshots;
+export const kickbacks  = layout.kickbacks;
+export const guides            = layout.guides;
+export const laneCurveSegments = layout.laneCurveSegments;
+export const laneGate          = layout.laneGate;
 
 // --- Speltillstånd ---
 // En JS-spegel av wasm-corets tillstånd, synkad varje bildruta (se

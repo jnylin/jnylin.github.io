@@ -22,6 +22,7 @@ export const pinballapi_is_ball_save_active: (a: number) => number;
 export const pinballapi_kickback_count: (a: number) => number;
 export const pinballapi_kickback_flash: (a: number, b: number) => number;
 export const pinballapi_launch_power: (a: number) => number;
+export const pinballapi_layout: (a: number) => [number, number];
 export const pinballapi_new: (a: number) => number;
 export const pinballapi_nudge: (a: number, b: number, c: number) => [number, number];
 export const pinballapi_over: (a: number) => number;
