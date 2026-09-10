@@ -520,7 +520,7 @@
         <h2 class="display">Vi växlar till terminalen</h2>
         <span class="cmd">npm run test:springer</span>
         <span class="cmd">npm run report:generate</span>
-        <span class="cmd">npx playwright test --project=ebsco --headed --workers=1 --grep "Quantitative Hydrology.*focused element has visible focus indicator"</span>
+        <span class="cmd">npx playwright test --project=ebsco --headed --workers=1 --grep "Quantitative Hydrology"</span>
       </div>
     </section>
 
@@ -540,7 +540,6 @@
         <summary>Fler brister i samma läsare — bekräftat live på alla 3 testade böcker</summary>
         <ul class="finding-list">
           <li><span class="sev"></span><div>"Hoppa till innehåll"-länken pekar på ett element som inte finns i sidan.</div></li>
-          <li><span class="sev"></span><div>Inget synligt fokusmärke på det första fokuserade elementet.</div></li>
           <li><span class="sev"></span><div>Inget <code>&lt;main&gt;</code>-landmärke i läsaren.</div></li>
           <li><span class="sev"></span><div>Den onämnda iframen bekräftad live — inte bara i den nedladdade EPUB-filen.</div></li>
         </ul>
