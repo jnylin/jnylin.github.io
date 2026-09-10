@@ -15,7 +15,7 @@
     --bg: #FDECB2;           /* Liljekonvalj */
     --ink: #232326;          /* Sotakleja — headings, body, every plain label */
     --ink-dim: rgba(35,35,38,0.72);
-    --ink-faint: rgba(35,35,38,0.5);
+    --ink-faint: rgba(35,35,38,0.66); /* ~4.7:1 on --bg — 0.5 only gave ~3:1, below AA */
     --line: rgba(35,35,38,0.22);
     --line-soft: rgba(35,35,38,0.14);
     --critical: #A62186;     /* Azalea — the one "look here" accent: severity
@@ -483,7 +483,7 @@
       </div>
       <div class="table-wrap">
         <table class="platform-table">
-          <tr><th>Plattform</th><th>Typ</th><th>Autentisering</th></tr>
+          <tr><th scope="col">Plattform</th><th scope="col">Typ</th><th scope="col">Autentisering</th></tr>
           <tr><td>ProQuest Ebook Central</td><td>Webbläsare</td><td>IP-baserad / SSO vid behov</td></tr>
           <tr><td>EBSCO eBooks</td><td>Webbläsare</td><td>IP-baserad</td></tr>
           <tr><td>Springer Nature (OA)</td><td>Webbläsare + EPUB</td><td>Öppen / IP</td></tr>
@@ -497,7 +497,7 @@
       <h2 class="display">Vad testerna faktiskt kontrollerar</h2>
       <div class="table-wrap">
         <table class="checks-table">
-          <tr><th>Test</th><th>WCAG</th></tr>
+          <tr><th scope="col">Test</th><th scope="col">WCAG</th></tr>
           <tr><td>Inga kritiska eller allvarliga axe-fel</td><td class="wcag-pill">Flera kriterier</td></tr>
           <tr><td>Sidtitel är beskrivande</td><td class="wcag-pill">2.4.2</td></tr>
           <tr><td>Tangentbordsfokus flyttas vid Tab</td><td class="wcag-pill">2.1.1</td></tr>
@@ -661,8 +661,9 @@
 
   let current = 0;
 
-  function goTo(i){
+  function goTo(i, opts){
     if (i < 0 || i >= total) return;
+    const moveFocus = !opts || opts.moveFocus !== false;
     slides[current].hidden = true;
     current = i;
     slides[current].hidden = false;
@@ -674,6 +675,16 @@
     dots.forEach((d, idx) => d.setAttribute('aria-current', idx === current ? 'true' : 'false'));
     slides[current].scrollTop = 0;
     if (current !== 0 && !introDone) finishIntro();
+    // Move focus (and thus screen reader attention) to the new slide's
+    // heading so keyboard/AT users are told the content changed — hidden
+    // toggling alone is silent to them.
+    if (moveFocus){
+      const heading = slides[current].querySelector('h1, h2');
+      if (heading){
+        if (!heading.hasAttribute('tabindex')) heading.setAttribute('tabindex', '-1');
+        heading.focus();
+      }
+    }
   }
 
   // ── Slide 1 cold open: a reader walks the line, hits a gap (a barrier),
@@ -891,7 +902,15 @@
     goTo(current + 1);
   });
 
+  // Elements that natively respond to Space themselves (buttons, links,
+  // the <summary> disclosure toggle) must keep that behavior — the global
+  // slide-navigation shortcuts below must not steal Space from them.
+  function isNativelySpaceActivated(el){
+    return !!el.closest('button, a[href], summary, input, select, textarea, [role="button"]');
+  }
+
   document.addEventListener('keydown', (e) => {
+    if (e.key === ' ' && isNativelySpaceActivated(e.target)) return;
     if (current === 0 && !introDone && (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown')){
       e.preventDefault();
       triggerBridge();
@@ -903,7 +922,7 @@
     else if (e.key === 'End'){ e.preventDefault(); goTo(total - 1); }
   });
 
-  goTo(0);
+  goTo(0, { moveFocus: false });
 </script>
 </body>
 </html>
