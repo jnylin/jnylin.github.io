@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>ReadAble Test</title>
+<style>
+  :root{
+    /* Linnéuniversitetet brand palette (designmanual/farger).
+       Liljekonvalj is the manual's secondary color, paired with — and
+       explicitly described as working well with — black text over large
+       areas; Sotakleja is that text/ink pairing, separately called out for
+       presentation templates specifically. */
+    --bg: #FDECB2;           /* Liljekonvalj */
+    --ink: #232326;          /* Sotakleja — headings, body, every plain label */
+    --ink-dim: rgba(35,35,38,0.72);
+    --ink-faint: rgba(35,35,38,0.5);
+    --line: rgba(35,35,38,0.22);
+    --line-soft: rgba(35,35,38,0.14);
+    --critical: #A62186;     /* Azalea — the one "look here" accent: severity
+                                 dots, the criterion/scan-tag pills, the warn
+                                 stat number, the impact blockquote border.
+                                 ~5.6:1 directly on --bg, so unlike on a dark
+                                 background it doesn't need a pill fill to
+                                 stay legible — only used as a filled pill
+                                 (white text) where it must double as a badge. */
+    --positive: #007340;     /* Murgröna — confirmation accent: the tag pill
+                                 (white text), the corroborate border, the
+                                 closing-list marker. ~5:1 directly on --bg. */
+    --pill-text: #FFFFFF;    /* Always white on filled critical/positive pills
+                                 — both are dark enough that --ink (also dark)
+                                 would fail contrast on top of them. */
+    --term-bg: #0B1220;
+    --term-fg: #F4F6F5;
+    --term-dim: rgba(244,246,245,0.55);
+    --term-key: #4CD9A0;     /* terminal syntax highlighting only — a legible
+                                bright green, not part of the brand palette,
+                                kept independent since the code block is its
+                                own deliberately dark component (see .terminal) */
+    --term-warn: #FF8F5E;
+    --font-body: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+
+  *{ box-sizing: border-box; }
+  html,body{ height:100%; }
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    overflow: hidden;
+  }
+
+  .deck{
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    padding: clamp(1rem,2.4vw,1.9rem) clamp(1.2rem,3.5vw,3rem);
+    gap: 0.9rem;
+  }
+
+  .bar{
+    flex: 0 0 auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:1rem;
+    padding-bottom: 0.7rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .bar-left{ display:flex; align-items:baseline; gap:0.9rem; min-width:0; }
+  .kicker{
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow: ellipsis;
+  }
+  .brand{
+    font-weight: 800;
+    font-size: 0.95rem;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    white-space:nowrap;
+  }
+  .count{
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: var(--ink-dim);
+    font-variant-numeric: tabular-nums;
+    flex: 0 0 auto;
+  }
+
+  .progress-track{
+    flex: 0 0 auto;
+    position:relative;
+    height:3px;
+    background: var(--line-soft);
+    border-radius: 999px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    position:absolute; inset:0 auto 0 0;
+    width: 10%;
+    background: var(--ink);
+    border-radius: 999px;
+    transition: width .35s ease;
+  }
+  @media (prefers-reduced-motion: reduce){ .progress-fill{ transition:none; } }
+
+  main{
+    flex: 1 1 auto;
+    min-height:0;
+    position:relative;
+  }
+
+  .slide{
+    position:absolute; inset:0;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding: clamp(0.5rem,2vw,1.2rem) clamp(0.2rem,2.5vw,1rem);
+    overflow-y:auto;
+  }
+  .slide[hidden]{ display:none; }
+
+  .eyebrow{
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin: 0 0 0.7rem;
+  }
+  h1.display{
+    font-weight: 800;
+    font-size: clamp(2.1rem, 4.6vw, 3.6rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    margin: 0 0 1rem;
+    max-width: 16ch;
+    color: var(--ink);
+  }
+  h2.display{
+    font-weight: 800;
+    font-size: clamp(1.6rem, 3.3vw, 2.4rem);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+    margin: 0 0 1.1rem;
+    max-width: 22ch;
+    color: var(--ink);
+  }
+  p.lede{
+    font-size: clamp(1rem, 1.25vw, 1.15rem);
+    line-height: 1.55;
+    color: var(--ink-dim);
+    max-width: 62ch;
+    margin: 0 0 1.2rem;
+  }
+  /* Slide 1: intro animation */
+  .intro-canvas{ position:absolute; inset:0; z-index:1; }
+  .intro-content{
+    position:relative; z-index:2;
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity .8s ease, transform .8s ease;
+  }
+  .intro-content.visible{ opacity:1; transform:translateY(0); }
+  @media (prefers-reduced-motion: reduce){
+    .intro-content{ transition:none; }
+  }
+  .intro-skip{
+    position:absolute; z-index:3; bottom: 0.8rem; right: 0.4rem;
+    background:none; border:none; cursor:pointer;
+    font-family: inherit; font-size: 0.8rem; font-weight:700;
+    color: var(--ink-faint); text-decoration: underline;
+    padding: 0.3rem;
+  }
+  .intro-skip:hover{ color: var(--ink); }
+  .intro-skip[hidden]{ display:none; }
+
+  .tag{
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.28rem 0.6rem;
+    border-radius: 999px;
+    background: var(--positive);
+    color: var(--pill-text);
+    white-space:nowrap;
+  }
+
+  /* platform chips */
+  .chip-row{ display:flex; flex-wrap:wrap; gap:0.55rem; margin: 0.5rem 0 0; }
+  .chip{
+    font-weight: 700;
+    font-size: 0.86rem;
+    padding: 0.5rem 0.95rem;
+    border-radius: 999px;
+    color: var(--ink);
+    border: 1.5px solid var(--line);
+  }
+  .scan-note{
+    display:flex;
+    align-items:flex-start;
+    gap: 0.85rem;
+    max-width: 58rem;
+    margin-top: 1.2rem;
+    padding: 1rem 1.3rem;
+    border-radius: 0.9rem;
+    border: 2px dashed var(--line);
+  }
+  .scan-note .scan-tag{
+    flex: 0 0 auto;
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.35rem 0.6rem;
+    border-radius: 999px;
+    background: var(--critical);
+    color: var(--pill-text);
+    margin-top: 0.1rem;
+    white-space: nowrap;
+  }
+  .scan-note p{ margin:0; font-size: 0.92rem; color: var(--ink-dim); line-height:1.5; }
+  .scan-note b{ color: var(--ink); font-weight:800; }
+
+  .corroborate{
+    display:flex;
+    align-items:flex-start;
+    gap: 0.85rem;
+    max-width: 58rem;
+    margin: 1.1rem 0 0;
+    padding: 0.9rem 1.2rem;
+    border-left: 3px solid var(--positive);
+  }
+  .corroborate p{ margin:0; font-size: 0.92rem; color: var(--ink-dim); line-height:1.5; }
+  .corroborate b{ color: var(--ink); font-weight:800; }
+
+  /* two-column engine cards */
+  .grid-2{ display:grid; grid-template-columns: repeat(2,1fr); gap: 1rem; max-width: 60rem; margin-bottom: 1.2rem; }
+  .card{
+    border: 1.5px solid var(--line);
+    border-radius: 1rem;
+    padding: 1.2rem 1.35rem;
+  }
+  .card h3{ font-weight: 800; font-size: 1.08rem; margin: 0 0 0.5rem; color: var(--ink); }
+  .card p{ margin:0; color: var(--ink-dim); font-size: 0.94rem; line-height:1.5; }
+  .card .badge{
+    font-size: 0.7rem; font-weight: 800; letter-spacing:0.06em; text-transform: uppercase;
+    color: var(--critical); display:block; margin-bottom:0.4rem;
+  }
+
+  .table-wrap{ overflow-x:auto; max-width: 60rem; }
+  .platform-table, .checks-table{ width:100%; border-collapse: collapse; }
+  .platform-table th, .platform-table td, .checks-table td, .checks-table th{
+    text-align:left; padding: 0.6rem 1rem 0.6rem 0;
+    border-bottom: 1px solid var(--line-soft);
+    font-size: 0.92rem; font-weight: 500;
+  }
+  .platform-table th, .checks-table th{
+    font-size: 0.72rem; font-weight: 800; letter-spacing:0.08em; text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .wcag-pill{ font-weight: 600; color: var(--ink-dim); }
+
+  /* demo cue slide */
+  .cue{ display:flex; flex-direction:column; align-items:flex-start; justify-content:center; height:100%; }
+  .cue .cmd{
+    font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+    background: var(--term-bg);
+    color: var(--term-key);
+    padding: 0.7rem 1.1rem;
+    border-radius: 0.7rem;
+    display:block;
+    max-width: 100%;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0.3rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  /* stat row */
+  .stat-row{ display:flex; gap: 2rem; flex-wrap:wrap; margin-bottom: 1.2rem; }
+  .stat{ min-width: 7.5rem; }
+  .stat .n{ font-size: 2.5rem; font-weight: 800; line-height:1; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .stat .n.warn{ color: var(--critical); }
+  .stat .l{ font-size: 0.72rem; font-weight: 700; letter-spacing:0.06em; text-transform: uppercase; color: var(--ink-faint); margin-top: 0.35rem; }
+
+  .finding-list{ list-style:none; margin:0 0 1.3rem; padding:0; max-width: 46rem; }
+  .finding-list li{
+    display:flex; gap: 0.8rem; align-items:flex-start;
+    padding: 0.65rem 0; border-top: 1px solid var(--line-soft);
+    font-size: 0.94rem; line-height:1.5;
+  }
+  .finding-list li:last-child{ border-bottom: 1px solid var(--line-soft); }
+  .sev{ flex: 0 0 auto; width: 0.6rem; height: 0.6rem; border-radius: 50%; background: var(--critical); margin-top: 0.4rem; }
+  .finding-list b{ font-weight:800; }
+  .finding-list .src{ display:block; color: var(--ink-faint); font-size: 0.82rem; margin-top:0.15rem; }
+
+  /* Expandable block — collapsed by default, opened live on demand */
+  details.expand{ margin: 0.9rem 0 1.3rem; }
+  details.expand summary{
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--ink);
+  }
+  details.expand summary::-webkit-details-marker{ display: none; }
+  details.expand summary::before{
+    content: "▸";
+    color: var(--critical);
+    font-size: 0.8rem;
+    transition: transform .15s ease;
+  }
+  details.expand[open] summary::before{ transform: rotate(90deg); }
+  details.expand summary:hover{ color: var(--critical); }
+  details.expand .finding-list{ margin: 0.8rem 0 0; }
+  @media (prefers-reduced-motion: reduce){
+    details.expand summary::before{ transition: none; }
+  }
+
+  /* terminal mock */
+  .terminal{
+    background: var(--term-bg);
+    border-radius: 0.9rem;
+    padding: 1.1rem 1.3rem;
+    font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+    font-size: 0.8rem;
+    line-height:1.65;
+    color: var(--term-fg);
+    max-width: 40rem;
+  }
+  .terminal .dots{ display:flex; gap:0.35rem; margin-bottom:0.7rem; }
+  .terminal .dots span{ width:0.55rem; height:0.55rem; border-radius:50%; background: rgba(255,255,255,0.2); display:block; }
+  .terminal .k{ color: var(--term-key); }
+  .terminal .s{ color: var(--term-fg); }
+  .terminal .m{ color: var(--term-dim); }
+  .terminal .r{ color: var(--term-warn); }
+  .terminal .prompt{ color: var(--term-warn); }
+
+  .impact-row{
+    display:flex;
+    align-items:center;
+    gap: 1.6rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.2rem;
+  }
+  blockquote.impact{
+    margin: 0;
+    padding: 0.1rem 0 0.1rem 1.2rem;
+    border-left: 5px solid var(--critical);
+    font-weight: 800;
+    font-size: clamp(1.1rem, 1.9vw, 1.4rem);
+    line-height:1.4;
+    max-width: 38ch;
+  }
+  .impact-icon{ flex: 0 0 auto; opacity: 0.9; }
+  .criterion{
+    display:inline-block;
+    font-size: 0.78rem; font-weight: 800;
+    background: var(--critical); color: var(--pill-text);
+    padding: 0.35rem 0.7rem; border-radius: 999px;
+    margin-top: 0.3rem;
+  }
+
+  .limits{ list-style:none; margin:0 0 1.3rem; padding:0; max-width: 46rem; }
+  .limits li{
+    position:relative; padding: 0.55rem 0 0.55rem 1.7rem;
+    font-size: 1rem; line-height:1.5; border-top: 1px solid var(--line-soft);
+  }
+  .limits li:last-child{ border-bottom: 1px solid var(--line-soft); }
+  .limits li::before{
+    content: "?"; position:absolute; left:0; top:0.55rem;
+    font-weight: 800; color: var(--critical); font-size: 0.9rem;
+  }
+
+  .closing-list{ list-style:none; margin:0 0 1.2rem; padding:0; max-width: 44rem; }
+  .closing-list li{ padding: 0.5rem 0 0.5rem 1.6rem; position:relative; font-size: 1rem; line-height:1.5; }
+  .closing-list li::before{
+    content: ""; position:absolute; left:0; top:0.85rem;
+    width:0.6rem; height:3px; border-radius: 2px; background: var(--positive);
+  }
+  .source-link{
+    margin-top: 1.4rem;
+    font-size: 0.85rem;
+    color: var(--ink-dim);
+  }
+  .source-link a{ color: var(--ink); font-weight: 700; }
+
+  footer.nav{
+    flex: 0 0 auto;
+    display:flex; align-items:center; justify-content: space-between; gap: 1rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--line);
+  }
+  .nav-btns{ display:flex; gap:0.6rem; }
+  .nav-btn{
+    font-family: inherit; font-weight: 700; font-size: 0.85rem;
+    background: none; border: 1.5px solid var(--line); color: var(--ink);
+    padding: 0.5rem 1rem; border-radius: 0.6rem; cursor:pointer;
+    transition: background .15s ease, opacity .15s ease;
+  }
+  .nav-btn:hover{ background: rgba(255,255,255,0.1); }
+  .nav-btn:disabled{ opacity:0.3; cursor:default; }
+  .nav-btn:disabled:hover{ background:none; }
+  .dots-nav{ display:flex; gap:0.4rem; }
+  .dots-nav button{ width:0.5rem; height:0.5rem; border-radius:50%; border:none; padding:0; cursor:pointer; background: var(--line); }
+  .dots-nav button[aria-current="true"]{ background: var(--ink); width:1.15rem; border-radius:4px; }
+  .hint{ font-size: 0.78rem; font-weight: 600; color: var(--ink-faint); }
+
+  :focus-visible{ outline: 3px solid var(--ink); outline-offset: 2px; border-radius: 4px; }
+
+  @media (max-width: 720px){
+    .grid-2{ grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="deck">
+  <div class="bar">
+    <div class="bar-left">
+      <span class="kicker" id="barKicker">Kicker</span>
+      <span class="brand">ReadAble Test</span>
+    </div>
+    <span class="count" id="barCount">1 / 10</span>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+  <main id="slides">
+
+    <section class="slide" data-kicker="Workshop om e-böcker och talböcker &ndash; 16 september 2026">
+      <canvas class="intro-canvas" id="introCanvas"></canvas>
+      <button class="intro-skip" id="introSkip" type="button">Hoppa över →</button>
+      <div class="intro-content" id="introContent">
+        <h1 class="display">Automatisk tillgänglighetstestning av e-böcker</h1>
+        <p class="lede">Vad ett testverktyg faktiskt kan — och inte kan — berätta om hur läsbara våra inköpta e-böcker är.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-kicker="Varför detta spår" hidden>
+      <p class="eyebrow">Utgångspunkt</p>
+      <h2 class="display">Hur tillgängliga är våra e-böcker?</h2>
+      <p class="lede" style="margin-bottom:0.5rem;">Testverktyget har använts mot följande plattformar:</p>
+      <div class="chip-row">
+        <span class="chip">ProQuest Ebook Central</span>
+        <span class="chip">EBSCO eBooks</span>
+        <span class="chip">Springer Nature (OA)</span>
+      </div>
+      <div class="scan-note">
+        <span class="scan-tag">Omvärldsbevakning</span>
+        <p><b>Biblio</b> testades också</p>
+      </div>
+    </section>
+
+    <section class="slide" data-kicker="Verktyget" hidden>
+      <p class="eyebrow">Hur det fungerar</p>
+      <h2 class="display">Två testmotorer, fyra plattformar</h2>
+      <div class="grid-2">
+        <div class="card">
+          <span class="badge">Webbläsare</span>
+          <h3>axe-core via Playwright</h3>
+          <p>Testar själva läsargränssnittet mot WCAG 2.1 AA — tangentbordsfokus, landmärken, sidtitlar, iframe-namn och fler kriterier, per bok och plattform.</p>
+        </div>
+        <div class="card">
+          <span class="badge">EPUB-filer</span>
+          <h3>Ace by DAISY</h3>
+          <p>Statisk analys av nedladdade EPUB:er mot EPUB Accessibility-specifikationen, för böcker från EBSCO och Springer.</p>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="platform-table">
+          <tr><th>Plattform</th><th>Typ</th><th>Autentisering</th></tr>
+          <tr><td>ProQuest Ebook Central</td><td>Webbläsare</td><td>IP-baserad / SSO vid behov</td></tr>
+          <tr><td>EBSCO eBooks</td><td>Webbläsare</td><td>IP-baserad</td></tr>
+          <tr><td>Springer Nature (OA)</td><td>Webbläsare + EPUB</td><td>Öppen / IP</td></tr>
+          <tr><td>EPUB-filer</td><td>Dokumentnivå</td><td>—</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section class="slide" data-kicker="Testtäckning" hidden>
+      <p class="eyebrow">I detalj</p>
+      <h2 class="display">Vad testerna faktiskt kontrollerar</h2>
+      <div class="table-wrap">
+        <table class="checks-table">
+          <tr><th>Test</th><th>WCAG</th></tr>
+          <tr><td>Inga kritiska eller allvarliga axe-fel</td><td class="wcag-pill">Flera kriterier</td></tr>
+          <tr><td>Sidtitel är beskrivande</td><td class="wcag-pill">2.4.2</td></tr>
+          <tr><td>Tangentbordsfokus flyttas vid Tab</td><td class="wcag-pill">2.1.1</td></tr>
+          <tr><td>Fokuserat element har synlig fokusindikator</td><td class="wcag-pill">2.4.7</td></tr>
+          <tr><td>Sidnavigering nåbar med tangentbord</td><td class="wcag-pill">2.1.1</td></tr>
+          <tr><td>Huvudinnehåll har landmärke</td><td class="wcag-pill">1.3.6</td></tr>
+          <tr><td>Iframes har tillgängliga namn</td><td class="wcag-pill">4.1.2</td></tr>
+          <tr><td>Bilder har alt-attribut</td><td class="wcag-pill">1.1.1</td></tr>
+          <tr><td>Innehåll reflows vid 320px bredd</td><td class="wcag-pill">1.4.10</td></tr>
+          <tr><td>Rubriknivåer hoppar inte</td><td class="wcag-pill">1.3.1</td></tr>
+          <tr><td>Shift+Tab flyttar fokus bakåt</td><td class="wcag-pill">2.1.2</td></tr>
+          <tr><td>Inga axe-fel efter sidbläddring</td><td class="wcag-pill">Flera kriterier</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section class="slide" data-kicker="Live-demo" hidden>
+      <div class="cue">
+        <p class="eyebrow">Nu byter vi fönster</p>
+        <h2 class="display">Vi växlar till terminalen</h2>
+        <span class="cmd">npm run test:springer</span>
+        <span class="cmd">npm run report:generate</span>
+        <span class="cmd">npx playwright test --project=ebsco --headed --workers=1 --grep "Quantitative Hydrology.*focused element has visible focus indicator"</span>
+      </div>
+    </section>
+
+    <section class="slide" data-kicker="Ace by DAISY · EBSCO · Introduction to Quantitative Hydrology" hidden>
+      <p class="eyebrow">Riktiga fynd, inte exempel</p>
+      <h2 class="display">26 av 29 sidor har samma fel</h2>
+      <div class="stat-row">
+        <div class="stat"><span class="n">29</span><span class="l">Sidor analyserade</span></div>
+        <div class="stat"><span class="n warn">26</span><span class="l">Med samma fel</span></div>
+        <div class="stat"><span class="n">1</span><span class="l">Mall orsakar allt</span></div>
+      </div>
+      <ul class="finding-list">
+        <li><span class="sev"></span><div><b>Varje sida</b> avslutas med en dold länk till EBSCO:s licensvillkor — den är märkt <code>aria-hidden="true"</code> men går ändå att tabba till (Ace/axe: <code>aria-hidden-focus</code>, allvarlig).</div></li>
+        <li><span class="sev"></span><div><b>26 av 29 kapitel/sidor</b> i boken bär exakt samma fel — det sitter i EBSCO:s egen sidmall, inte i den enskilda titeln.<span class="src">Introduction to Quantitative Hydrology</span></div></li>
+      </ul>
+      <details class="expand">
+        <summary>Fler brister i samma läsare — bekräftat live på alla 3 testade böcker</summary>
+        <ul class="finding-list">
+          <li><span class="sev"></span><div>"Hoppa till innehåll"-länken pekar på ett element som inte finns i sidan.</div></li>
+          <li><span class="sev"></span><div>Inget synligt fokusmärke på det första fokuserade elementet.</div></li>
+          <li><span class="sev"></span><div>Inget <code>&lt;main&gt;</code>-landmärke i läsaren.</div></li>
+          <li><span class="sev"></span><div>Den onämnda iframen bekräftad live — inte bara i den nedladdade EPUB-filen.</div></li>
+        </ul>
+      </details>
+      <div class="corroborate">
+        <span class="tag">Bekräftat hos fler</span>
+        <p>Samma felkategori (WCAG 4.1.2 — inget namn på ett interaktivt element) dök upp oberoende hos <b>Springer</b>: en onämnd läsar-iframe på <b>3 av 3</b> testade böcker. Två orelaterade leverantörer, samma mönster — inte en engångsgrej.</p>
+      </div>
+      <div class="terminal">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <div><span class="prompt">✗</span> xhtml/C_005_c1.xhtml — aria-hidden-focus</div>
+        <div>&nbsp;</div>
+        <div><span class="s">{</span></div>
+        <div>&nbsp;&nbsp;<span class="k">"id"</span>: <span class="s">"aria-hidden-focus"</span>,</div>
+        <div>&nbsp;&nbsp;<span class="k">"impact"</span>: <span class="r">"serious"</span>,</div>
+        <div>&nbsp;&nbsp;<span class="k">"description"</span>: <span class="s">"Ensure aria-hidden elements are not focusable"</span>,</div>
+        <div>&nbsp;&nbsp;<span class="k">"html"</span>: <span class="m">"&lt;a href=\"…legal.ebsco.com/license-agreement\"&gt;"</span></div>
+        <div><span class="s">}</span></div>
+      </div>
+    </section>
+
+    <section class="slide" data-kicker="ProQuest · 10 böcker · två läsare, båda trasiga" hidden>
+      <p class="eyebrow">Riktiga fynd, inte exempel</p>
+      <h2 class="display">ProQuest har två olika läsare — kritiska fel i båda</h2>
+      <div class="stat-row">
+        <div class="stat"><span class="n">10</span><span class="l">Böcker testade</span></div>
+        <div class="stat"><span class="n warn">10</span><span class="l">Med kritiska axe-fel</span></div>
+        <div class="stat"><span class="n">2</span><span class="l">Olika läsarimplementationer</span></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <span class="badge">5 av 10 böcker</span>
+          <h3>epub.js-läsaren</h3>
+          <p><code>aria-required-children</code>, <code>aria-roles</code>, ogiltiga ARIA-roller — plus samma onämnda iframe som hos EBSCO och Springer, och innehåll som inte får plats vid 320px bredd.</p>
+        </div>
+        <div class="card">
+          <span class="badge">5 av 10 böcker</span>
+          <h3>Bild-/PDF-läsaren</h3>
+          <p>Knappar utan namn, bilder utan alt-text, ogiltiga ARIA-attributvärden — ett helt annat felmönster, samma allvarlighetsgrad.</p>
+        </div>
+      </div>
+      <p class="lede" style="font-size:0.9rem; margin-bottom:1rem;">Kritiska fel — högre allvarlighetsgrad än EBSCO- och Springer-fynden — på <b>alla 10</b> testade böcker, oavsett vilken av de två läsarna boken råkar öppnas i.</p>
+      <div class="corroborate">
+        <span class="tag">Tre leverantörer, samma mönster</span>
+        <p>Samma felkategori (WCAG 4.1.2 — inget namn på ett interaktivt element) är nu bekräftad oberoende hos EBSCO, Springer <b>och</b> ProQuest. Tre orelaterade leverantörer, samma sorts fel i respektive läsare.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-kicker="Varför det spelar roll" hidden>
+      <p class="eyebrow">Från fel-kod till läsupplevelse</p>
+      <h2 class="display">Ett osynligt stopp, om och om igen</h2>
+      <div class="impact-row">
+        <blockquote class="impact">
+          Tabbar man sig fram i boken landar man på en länk som varken syns eller annonseras — på 26 av 29 sidor.
+        </blockquote>
+        <svg class="impact-icon" viewBox="0 0 160 70" width="130" height="57" aria-hidden="true">
+          <line x1="5" y1="50" x2="66" y2="50" stroke="#232326" stroke-width="4" stroke-linecap="round"/>
+          <line x1="94" y1="50" x2="155" y2="50" stroke="#232326" stroke-width="4" stroke-linecap="round"/>
+          <path d="M66,50 Q80,58 94,50" stroke="#007340" stroke-width="4" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <p class="lede">Det är vad <code>aria-hidden-focus</code>-felet betyder i praktiken: en student som navigerar med tangentbord eller skärmläsare fastnar i en osynlig, namnlös länk varje gång hen bläddrar vidare i boken. Precis som i intro-animationen — hindret finns kvar tills någon bygger bron över det.</p>
+      <span class="criterion">WCAG 4.1.2 — Name, Role, Value</span>
+    </section>
+
+    <section class="slide" data-kicker="Gränser" hidden>
+      <p class="eyebrow">Innan vi går vidare</p>
+      <h2 class="display">Vad automatiken inte kan svara på</h2>
+      <ul class="limits">
+        <li>Känns navigeringen begriplig i praktiken, inte bara teknisk korrekt?</li>
+        <li>Fungerar plattformens inbyggda uppläsning faktiskt bra?</li>
+        <li>Ritar läsaren upp sidan som text — eller bara som en bild (canvas)? Då finns inget för axe att läsa, oavsett hur vi testar.</li>
+        <li>Håller strukturen ihop över ett helt kapitel — inte bara en enskild sida?</li>
+      </ul>
+    </section>
+
+    <section class="slide" data-kicker="Sammanfattning" hidden>
+      <p class="eyebrow">Innan vi går vidare</p>
+      <h2 class="display">Ett skalbart facit — inte hela sanningen</h2>
+      <ul class="closing-list">
+        <li>Automatisk testning ger ett repeterbart facit per leverantör och bok, körbart om och om igen.</li>
+        <li>Redan idag: konkreta, åtgärdbara fynd — som EBSCO-exemplet.</li>
+      </ul>
+      <p class="source-link">Källkod och metodik: <a href="https://gitlab.com/lnu-ub/readable-test" target="_blank" rel="noopener noreferrer">gitlab.com/lnu-ub/readable-test</a></p>
+    </section>
+
+  </main>
+
+  <footer class="nav">
+    <div class="nav-btns">
+      <button class="nav-btn" id="prevBtn" type="button">← Föregående</button>
+      <button class="nav-btn" id="nextBtn" type="button">Nästa →</button>
+    </div>
+    <div class="dots-nav" id="dotsNav"></div>
+    <span class="hint">← → eller mellanslag för att navigera</span>
+  </footer>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  const barKicker = document.getElementById('barKicker');
+  const barCount = document.getElementById('barCount');
+  const progressFill = document.getElementById('progressFill');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const dotsNav = document.getElementById('dotsNav');
+
+  slides.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.setAttribute('aria-label', 'Bild ' + (i + 1));
+    dot.addEventListener('click', () => goTo(i));
+    dotsNav.appendChild(dot);
+  });
+  const dots = Array.from(dotsNav.children);
+
+  let current = 0;
+
+  function goTo(i){
+    if (i < 0 || i >= total) return;
+    slides[current].hidden = true;
+    current = i;
+    slides[current].hidden = false;
+    barKicker.textContent = slides[current].dataset.kicker || '';
+    barCount.textContent = (current + 1) + ' / ' + total;
+    progressFill.style.width = ((current + 1) / total * 100) + '%';
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === total - 1;
+    dots.forEach((d, idx) => d.setAttribute('aria-current', idx === current ? 'true' : 'false'));
+    slides[current].scrollTop = 0;
+    if (current !== 0 && !introDone) finishIntro();
+  }
+
+  // ── Slide 1 cold open: a reader walks the line, hits a gap (a barrier),
+  // and the fix — a bridge — has to be drawn before they can continue. On
+  // slide 0, Space/click/→ drive this instead of slide navigation until
+  // it resolves on its own; every other slide is unaffected.
+  const canvas = document.getElementById('introCanvas');
+  const ctx = canvas.getContext('2d');
+  const introContent = document.getElementById('introContent');
+  const introSkip = document.getElementById('introSkip');
+  let introDone = false;
+  let introState = 'WALKING_1';
+  let posX = -60;
+  let bridgeProgress = 0;
+  let pickupProgress = 0;
+  let pickedUp = false;
+  let unlocking = false;
+  let lockProgress = 0;
+  let frame = 0;
+  let rafId = null;
+
+  function sizeCanvas(){
+    const rect = slides[0].getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+  }
+  window.addEventListener('resize', sizeCanvas);
+  sizeCanvas();
+
+  function groundY(){ return canvas.height * 0.65; }
+  function gapStart(){ return canvas.width * 0.42; }
+  function gapEnd(){ return canvas.width * 0.58; }
+
+  function drawReader(x, y, walking){
+    ctx.strokeStyle = '#232326';
+    ctx.lineWidth = 5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    const cycle = walking ? Math.sin(frame * 0.22) * 12 : 0;
+
+    // Head
+    ctx.beginPath();
+    ctx.arc(x, y - 66, 10, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Body + legs, one stroke
+    ctx.beginPath();
+    ctx.moveTo(x, y - 56);
+    ctx.lineTo(x, y - 28);
+    ctx.lineTo(x - 12 - cycle, y);
+    ctx.moveTo(x, y - 28);
+    ctx.lineTo(x + 12 + cycle, y);
+    ctx.stroke();
+  }
+
+  // Book glyph (U+1F56E). Same (cx, cy, scale) signature as the old
+  // hand-drawn version, so resting/pickup-interpolation/held-in-hand call
+  // sites all keep working unchanged.
+  function drawBook(cx, cy, scale){
+    scale = scale || 1;
+    ctx.save();
+    ctx.font = (30 * scale) + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#232326';
+    ctx.fillText('\u{1F56E}', cx, cy);
+    ctx.restore();
+  }
+
+  // Padlock badge on the book: closed the whole time the barrier stands,
+  // then the shackle swings open and it fades away the instant the bridge
+  // completes — access to the content is what's actually being unlocked,
+  // not just a path.
+  function drawPadlock(x, y, openAmount, alpha){
+    if (alpha <= 0) return;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = '#232326';
+    ctx.fillStyle = '#232326';
+    ctx.lineWidth = 1.6;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    const bw = 11, bh = 8;
+    const bodyLeft = x - bw / 2, bodyTop = y;
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(bodyLeft, bodyTop, bw, bh, 2);
+    else ctx.rect(bodyLeft, bodyTop, bw, bh);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(x, bodyTop + bh / 2, 1, 0, Math.PI * 2);
+    ctx.fill();
+
+    const pivotX = x + bw / 2 - 1.5, pivotY = bodyTop;
+    const closedFreeX = x - bw / 2 + 1.5;
+    const openFreeX = closedFreeX - 2, openFreeY = bodyTop - 9;
+    const freeX = closedFreeX + (openFreeX - closedFreeX) * openAmount;
+    const freeY = bodyTop + (openFreeY - bodyTop) * openAmount;
+    const midX = (pivotX + freeX) / 2;
+    const midY = Math.min(pivotY, freeY) - (7 + openAmount);
+
+    ctx.beginPath();
+    ctx.moveTo(pivotX, pivotY);
+    ctx.quadraticCurveTo(midX, midY, freeX, freeY);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function triggerBridge(){
+    if (introState === 'WAITING') introState = 'DRAWING_BRIDGE';
+  }
+
+  function finishIntro(){
+    introDone = true;
+    if (rafId) cancelAnimationFrame(rafId);
+    const gy = groundY();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = '#232326';
+    ctx.lineWidth = 5;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(0, gy);
+    ctx.lineTo(canvas.width, gy);
+    ctx.stroke();
+    if (!pickedUp) drawBook(gapEnd() + 38, gy - 10);
+    introContent.classList.add('visible');
+    introSkip.hidden = true;
+  }
+
+  function introLoop(){
+    frame++;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const gy = groundY(), gs = gapStart(), ge = gapEnd();
+
+    ctx.strokeStyle = '#232326';
+    ctx.lineWidth = 5;
+    ctx.lineCap = 'round';
+
+    // Both edges of the gap are drawn from the very first frame — it's a
+    // bounded gap waiting to be crossed, not an open-ended void.
+    ctx.beginPath();
+    ctx.moveTo(0, gy);
+    ctx.lineTo(gs, gy);
+    ctx.moveTo(ge, gy);
+    ctx.lineTo(canvas.width, gy);
+    ctx.stroke();
+
+    if (bridgeProgress > 0){
+      const bx = gs + (ge - gs) * Math.min(bridgeProgress, 1);
+      ctx.beginPath();
+      ctx.moveTo(gs, gy);
+      ctx.quadraticCurveTo(gs + (bx - gs) / 2, gy + 8, bx, gy);
+      ctx.stroke();
+    }
+
+    const bookX = ge + 38, bookY = gy - 10;
+    // The book — what the reader is actually trying to reach — sits just
+    // past the gap. It's visible the whole time; it just can't be reached
+    // until the bridge closes the gap, then it's picked up and carried on.
+    if (!pickedUp && introState !== 'PICKUP'){
+      drawBook(bookX, bookY);
+      if (lockProgress < 1){
+        drawPadlock(
+          bookX + 13, bookY - 13,
+          Math.min(1, lockProgress / 0.5),
+          1 - Math.max(0, (lockProgress - 0.5) / 0.5)
+        );
+      }
+    }
+    if (unlocking) lockProgress = Math.min(1, lockProgress + 0.042);
+
+    if (introState === 'WALKING_1'){
+      posX += 3.2;
+      drawReader(posX, gy, true);
+      if (posX >= gs - 26) { posX = gs - 26; introState = 'WAITING'; }
+    } else if (introState === 'WAITING'){
+      drawReader(posX, gy, false);
+    } else if (introState === 'DRAWING_BRIDGE'){
+      bridgeProgress += 0.028;
+      drawReader(posX, gy, false);
+      if (bridgeProgress >= 1) { introState = 'WALKING_2'; unlocking = true; }
+    } else if (introState === 'WALKING_2'){
+      posX += 3.6;
+      drawReader(posX, gy, true);
+      if (posX >= bookX - 18) { posX = bookX - 18; introState = 'PICKUP'; pickupProgress = 0; }
+    } else if (introState === 'PICKUP'){
+      pickupProgress = Math.min(1, pickupProgress + 0.045);
+      drawReader(posX, gy, false);
+      const handX = posX + 20, handY = gy - 44;
+      drawBook(
+        bookX + (handX - bookX) * pickupProgress,
+        bookY + (handY - bookY) * pickupProgress,
+        1 - 0.25 * pickupProgress
+      );
+      if (pickupProgress >= 1) { pickedUp = true; introState = 'WALKING_3'; }
+    } else if (introState === 'WALKING_3'){
+      posX += 3.6;
+      drawReader(posX, gy, true);
+      drawBook(posX + 20, gy - 44, 0.75);
+      if (posX > canvas.width + 40) finishIntro();
+    }
+
+    if (!introDone) rafId = requestAnimationFrame(introLoop);
+  }
+  rafId = requestAnimationFrame(introLoop);
+
+  introSkip.addEventListener('click', finishIntro);
+  slides[0].addEventListener('click', (e) => {
+    if (!introDone && e.target !== introSkip) triggerBridge();
+  });
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => {
+    if (current === 0 && !introDone) { triggerBridge(); return; }
+    goTo(current + 1);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (current === 0 && !introDone && (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown')){
+      e.preventDefault();
+      triggerBridge();
+      return;
+    }
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown'){ e.preventDefault(); goTo(current + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp'){ e.preventDefault(); goTo(current - 1); }
+    else if (e.key === 'Home'){ e.preventDefault(); goTo(0); }
+    else if (e.key === 'End'){ e.preventDefault(); goTo(total - 1); }
+  });
+
+  goTo(0);
+</script>
+</body>
+</html>
