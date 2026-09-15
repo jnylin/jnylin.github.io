@@ -520,7 +520,7 @@
         <h2 class="display">Vi växlar till terminalen</h2>
         <span class="cmd">npm run test:springer</span>
         <span class="cmd">npm run report:generate</span>
-        <span class="cmd">npx playwright test --project=ebsco --headed --workers=1 --grep "Quantitative Hydrology"</span>
+        <span class="cmd">npx playwright test --project=ebsco --project=epub --headed --workers=1 --grep "hj4xez6auv"</span>
       </div>
     </section>
 
@@ -581,6 +581,13 @@
           <p>Knappar utan namn, bilder utan alt-text, ogiltiga ARIA-attributvärden — ett helt annat felmönster, samma allvarlighetsgrad.</p>
         </div>
       </div>
+      <details class="expand">
+        <summary>Två mönster som går igenom alla 10 böcker, oavsett läsare</summary>
+        <ul class="finding-list">
+          <li><span class="sev"></span><div><b>Rubriknivåer hoppar i alla 10 böcker</b> (t.ex. h1→h3, h1→h4, h1→h6) — 100% träffgrad, WCAG 1.3.1.</div></li>
+          <li><span class="sev"></span><div>epub.js-läsarens verktygsfält skriver <code>aria-role="button"</code> istället för <code>role="button"</code> — samma stavfel på minst tio olika knappar i menyn (TOC, sök, nedladdning, citering, med flera).</div></li>
+        </ul>
+      </details>
       <p class="lede" style="font-size:0.9rem; margin-bottom:1rem;">Kritiska fel — högre allvarlighetsgrad än EBSCO- och Springer-fynden — på <b>alla 10</b> testade böcker, oavsett vilken av de två läsarna boken råkar öppnas i.</p>
       <div class="corroborate">
         <span class="tag">Tre leverantörer, samma mönster</span>
@@ -622,7 +629,7 @@
       <ul class="closing-list">
           <li>Automatisk testning ger ett repeterbart facit per leverantör och bok, körbart om och om igen.</li>
           <li>Formella testresultat är svårare för leverantörer att avfärda än rapporter från manuella tester — och kan användas för att styrka vad de manuella testerna ger.</li>
-          <li>Redan idag: konkreta, åtgärdbara fynd — som EBSCO-exemplet.</li>
+          <li>Redan idag: konkreta, åtgärdbara fynd — som EBSCO- och ProQuest-exemplen.</li>
       </ul>
       <p class="source-link">Källkod och metodik: <a href="https://gitlab.com/lnu-ub/readable-test" target="_blank" rel="noopener noreferrer">gitlab.com/lnu-ub/readable-test</a></p>
     </section>
