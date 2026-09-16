@@ -517,10 +517,8 @@
     <section class="slide" data-kicker="Live-demo" hidden>
       <div class="cue">
         <p class="eyebrow">Nu byter vi fönster</p>
-        <h2 class="display">Vi växlar till terminalen</h2>
-        <span class="cmd">npm run test:springer</span>
-        <span class="cmd">npm run report:generate</span>
-        <span class="cmd">npx playwright test --project=ebsco --project=epub --headed --workers=1 --grep "hj4xez6auv"</span>
+        <h2 class="display">Vi växlar till terminalen för en kort demonstration</h2>
+        <span class="cmd">EBSCO_DEMO_SECTION=lp_15 npx playwright test --project=ebsco --project=epub --headed --workers=1 --grep "hj4xez6auv.*(skip link has a valid href target|iframes have accessible names)|ebsco-hj4xez6auv"</span>
       </div>
     </section>
 
