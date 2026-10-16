@@ -136,6 +136,12 @@
   .terms h3{ font-size: 0.95rem; margin: 0.7rem 0 0.2rem; }
   .terms ol{ margin: 0; padding-left: 1.2rem; }
   .page-error{ color: var(--error); font-weight: 700; margin: 0.6rem 0 0; min-height: 1.5em; }
+  .page ol.eres{ margin: 0 0 0.4rem; padding-left: 1.3rem; display:flex; flex-direction:column; gap: 0.4rem; }
+  .divider{ border: 0; border-top: 1px solid var(--page-line); margin: 1.6rem 0 1.2rem; }
+  .page-h2{ margin: 0 0 0.5rem; font-size: 1.45rem; line-height: 1.2; }
+  .consent{ font-weight: 700; margin: 0.4rem 0 0 !important; }
+  .page-btn.secondary{ background: var(--page); color: var(--button); border: 2px solid var(--button); }
+  .page-btn.secondary:hover{ background: var(--button); color: var(--lnu-yellow); }
   .page-actions{ display:flex; justify-content:flex-end; align-items:center; gap: 1.5rem; flex-wrap: wrap; margin-top: 0.8rem; }
   .page-actions.center{ flex-direction: column; justify-content: center; gap: 0.6rem; }
   .page-btn{
@@ -247,15 +253,23 @@
     <section class="slide" data-kicker="Skiss: förslaget" hidden>
       <div class="caption">
         <h2>Förslaget</h2>
-        <p>Visas bara för Lnu-användare som saknar PIN-kod. Prova gärna: fyll i en PIN-kod, eller fortsätt utan.</p>
+        <p>Reglerna för e-resurser visas öppet, som information. Lånereglerna godkänns genom Skapa PIN-kod. Prova gärna.</p>
       </div>
       <div class="browser">
         <div class="browser-top"><div class="dots" aria-hidden="true"><span></span><span></span><span></span></div><div class="addr">login.proxy.lnu.se</div></div>
         <div class="viewport">
           <form class="page" id="pinForm" novalidate autocomplete="off">
             <div class="page-head"><b>Universitetsbiblioteket</b><a href="#" onclick="return false">In English</a></div>
-            <h1>Vill du kunna låna böcker?</h1>
-            <p>Med en PIN-kod kan du låna i utlåningsautomaterna med ditt personnummer eller Lnu-kort. För e-resurserna behöver du ingen PIN-kod.</p>
+            <h1>Bibliotekets e-resurser</h1>
+            <p>När du använder bibliotekets e-resurser gäller följande:</p>
+            <ol class="eres">
+              <li>För samtliga elektroniska resurser gäller att utskrift och nedladdning endast får göras för personligt, icke-kommersiellt studie- eller forskningssyfte.</li>
+              <li>Det är i allmänhet tillåtet att spara och skriva ut enstaka artiklar, kapitel eller kortare avsnitt för eget bruk. Att spara ned större kvantiteter som till exempel ett helt tidskriftsnummer är inte tillåtet.</li>
+              <li>Forskare har, i vetenskapligt syfte, i allmänhet rätt att dela med sig av enstaka artiklar, kapitel eller kortare avsnitt till kollegor vid andra organisationer.</li>
+            </ol>
+            <hr class="divider">
+            <h2 class="page-h2">Vill du också kunna låna böcker?</h2>
+            <p>Med en PIN-kod kan du låna i utlåningsautomaterna med ditt personnummer eller Lnu-kort.</p>
             <div class="fields">
               <label for="pin">PIN-kod (4 siffror)
                 <input id="pin" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password"></label>
@@ -263,16 +277,8 @@
                 <input id="confirm-pin" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password"></label>
             </div>
             <details>
-              <summary>När du skapar en PIN-kod godkänner du bibliotekets villkor. Visa villkoren</summary>
+              <summary>Visa lånereglerna</summary>
               <div class="terms">
-                <h2>Villkor för användning av universitetsbibliotekets resurser vid Lnu</h2>
-                <p>Genom universitetsbiblioteket får du tillgång till resurser som samtidigt innebär ett ansvar att följa bibliotekets bestämmelser kring användandet av dessa resurser.</p>
-                <h3>Användning av bibliotekets elektroniska resurser</h3>
-                <ol>
-                  <li>För samtliga elektroniska resurser gäller att utskrift och nedladdning endast får göras för personligt, icke-kommersiellt studie- eller forskningssyfte.</li>
-                  <li>Det är i allmänhet tillåtet att spara och skriva ut enstaka artiklar, kapitel eller kortare avsnitt för eget bruk. Att spara ned större kvantiteter som till exempel ett helt tidskriftsnummer är inte tillåtet.</li>
-                  <li>Forskare har, i vetenskapligt syfte, i allmänhet rätt att dela med sig av enstaka artiklar, kapitel eller kortare avsnitt till kollegor vid andra organisationer.</li>
-                </ol>
                 <h3>Användning av bibliotekets fysiska resurser</h3>
                 <ol>
                   <li>Du är ansvarig för alla lån som görs med ditt bibliotekskonto/lånekort.</li>
@@ -282,11 +288,13 @@
                   <li>Det är förseningsavgift på lån som lämnas tillbaka efter angivet återlämningsdatum.</li>
                   <li>Har du skuld till biblioteket kan ditt bibliotekskonto spärras.</li>
                 </ol>
+                <p style="margin: 0.6rem 0 0">Detaljerade lånebestämmelser finns på lnu.se.</p>
               </div>
             </details>
             <p class="page-error" id="pinError" role="alert"></p>
+            <p class="consent">Genom att klicka på Skapa PIN-kod godkänner du lånereglerna.</p>
             <div class="page-actions">
-              <button class="page-link" type="button" id="skipBtn">Fortsätt utan PIN-kod</button>
+              <button class="page-btn secondary" type="button" id="skipBtn">Fortsätt till e-resursen</button>
               <button class="page-btn" type="submit">Skapa PIN-kod</button>
             </div>
           </form>
@@ -297,7 +305,7 @@
     <section class="slide" data-kicker="Skiss: efter Skapa PIN-kod" hidden>
       <div class="caption">
         <h2>Efter Skapa PIN-kod</h2>
-        <p>Först nu skapas kontot. PIN-koden mejlas aldrig, användaren har just valt den själv.</p>
+        <p>Först nu skapas kontot, och godkännandet av lånereglerna sparas. PIN-koden mejlas aldrig, användaren har just valt den själv.</p>
       </div>
       <div class="browser" role="img" aria-label="Skiss av sidan som visas medan PIN-koden sparas">
         <div class="browser-top"><div class="dots" aria-hidden="true"><span></span><span></span><span></span></div><div class="addr">login.proxy.lnu.se</div></div>
@@ -312,9 +320,9 @@
       <p class="again"><button class="page-link" type="button" data-goto="1">← Tillbaka till förslaget</button></p>
     </section>
 
-    <section class="slide" data-kicker="Skiss: fortsätt utan PIN-kod" hidden>
+    <section class="slide" data-kicker="Skiss: fortsätt till e-resursen" hidden>
       <div class="caption">
-        <h2>Fortsätt utan PIN-kod</h2>
+        <h2>Fortsätt till e-resursen</h2>
         <p>Användaren kommer direkt till e-resursen. Inget konto skapas, och frågan kommer igen vid nästa inloggning i proxyn.</p>
       </div>
       <div class="browser" role="img" aria-label="Skiss: e-resursen öppnas direkt">
