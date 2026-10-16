@@ -253,7 +253,7 @@
     <section class="slide" data-kicker="Skiss: förslaget" hidden>
       <div class="caption">
         <h2>Förslaget</h2>
-        <p>Reglerna för e-resurser visas öppet, som information. Lånereglerna godkänns genom Skapa PIN-kod. Prova gärna.</p>
+        <p>Reglerna för e-resurser visas öppet, som information. Lånereglerna fälls ut när man börjar skriva en PIN-kod och godkänns genom Skapa PIN-kod. Prova gärna.</p>
       </div>
       <div class="browser">
         <div class="browser-top"><div class="dots" aria-hidden="true"><span></span><span></span><span></span></div><div class="addr">login.proxy.lnu.se</div></div>
@@ -276,7 +276,7 @@
               <label for="confirm-pin">Bekräfta PIN-kod
                 <input id="confirm-pin" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password"></label>
             </div>
-            <details>
+            <details id="loanRules">
               <summary>Visa lånereglerna</summary>
               <div class="terms">
                 <h3>Användning av bibliotekets fysiska resurser</h3>
@@ -420,6 +420,15 @@
     goTo(2);
   });
   document.getElementById('skipBtn').addEventListener('click', () => goTo(3));
+
+  // Lånereglerna fälls ut första gången man skriver i PIN-fältet, så att
+  // de alltid har legat framme innan Skapa PIN-kod (som är godkännandet).
+  const pinInput = document.getElementById('pin');
+  function openLoanRules(){
+    document.getElementById('loanRules').open = true;
+    pinInput.removeEventListener('input', openLoanRules);
+  }
+  pinInput.addEventListener('input', openLoanRules);
 
   // Piltangenterna bläddrar, utom när man skriver i ett fält.
   document.addEventListener('keydown', (e) => {
