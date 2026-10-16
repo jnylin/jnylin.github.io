@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Lånekonto via EZproxy</title>
+<title>PIN-kod via EZproxy</title>
 <style>
   :root{
-    /* Linnéuniversitetets palett, som i decks/readable-test:
-       Liljekonvalj som bakgrund, Sotakleja som text, Azalea som
-       "titta här"-accent och Murgröna för det som blir bättre. */
+    /* Linnéuniversitetets palett, som i decks/readable-test: Liljekonvalj
+       runt omkring, Sotakleja som text. Skisserna själva är vita sidor i
+       ett webbläsarfönster, i proxyns egna färger (gult och mörkgrått). */
     --bg: #FDECB2;           /* Liljekonvalj */
     --ink: #232326;          /* Sotakleja */
     --ink-dim: rgba(35,35,38,0.72);
@@ -18,14 +18,14 @@
     --line-soft: rgba(35,35,38,0.14);
     --critical: #A62186;     /* Azalea */
     --positive: #007340;     /* Murgröna */
-    --pill-text: #FFFFFF;
-    /* Skisserna av själva bannern: en vit webbsida i ett webbläsarfönster. */
     --page: #FFFFFF;
     --page-ink: #222222;
     --page-soft: #FBFAF6;
     --page-line: #D6D3C4;
+    --chrome: #EDEBE3;
     --lnu-yellow: #FFE000;
     --button: #2B2B2B;
+    --error: #B00020;
     --font-body: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   }
 
@@ -43,242 +43,131 @@
     height:100vh;
     display:flex;
     flex-direction:column;
-    padding: clamp(1rem,2.4vw,1.9rem) clamp(1.2rem,3.5vw,3rem);
-    gap: 0.9rem;
+    padding: clamp(0.8rem,2vw,1.5rem) clamp(1rem,3vw,2.5rem);
+    gap: 0.8rem;
   }
 
   .bar{
     flex: 0 0 auto;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:1rem;
-    padding-bottom: 0.7rem;
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    padding-bottom: 0.6rem;
     border-bottom: 1px solid var(--line);
   }
   .bar-left{ display:flex; align-items:baseline; gap:0.9rem; min-width:0; }
   .kicker{
-    font-size: 0.76rem;
-    font-weight: 700;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-    color: var(--ink-dim);
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow: ellipsis;
+    font-size: 0.76rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--ink-dim); white-space:nowrap; overflow:hidden; text-overflow: ellipsis;
   }
-  .brand{
-    font-weight: 800;
-    font-size: 0.95rem;
-    letter-spacing: -0.01em;
-    color: var(--ink);
-    white-space:nowrap;
-  }
-  .count{
-    font-weight: 700;
-    font-size: 0.82rem;
-    color: var(--ink-dim);
-    font-variant-numeric: tabular-nums;
-    flex: 0 0 auto;
-  }
+  .brand{ font-weight: 800; font-size: 0.95rem; letter-spacing: -0.01em; white-space:nowrap; }
+  .count{ font-weight: 700; font-size: 0.82rem; color: var(--ink-dim); font-variant-numeric: tabular-nums; flex: 0 0 auto; }
 
-  .progress-track{
-    flex: 0 0 auto;
-    position:relative;
-    height:3px;
-    background: var(--line-soft);
-    border-radius: 999px;
-    overflow:hidden;
-  }
-  .progress-fill{
-    position:absolute; inset:0 auto 0 0;
-    width: 10%;
-    background: var(--ink);
-    border-radius: 999px;
-    transition: width .35s ease;
-  }
+  .progress-track{ flex: 0 0 auto; position:relative; height:3px; background: var(--line-soft); border-radius: 999px; overflow:hidden; }
+  .progress-fill{ position:absolute; inset:0 auto 0 0; width: 10%; background: var(--ink); border-radius: 999px; transition: width .35s ease; }
   @media (prefers-reduced-motion: reduce){ .progress-fill{ transition:none; } }
 
-  main{
-    flex: 1 1 auto;
-    min-height:0;
-    position:relative;
-  }
+  main{ flex: 1 1 auto; min-height:0; position:relative; }
 
   .slide{
     position:absolute; inset:0;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    padding: clamp(0.5rem,2vw,1.2rem) clamp(0.2rem,2.5vw,1rem);
-    overflow-y:auto;
+    display:flex; flex-direction:column; gap: 0.7rem;
+    min-height: 0;
   }
   .slide[hidden]{ display:none; }
 
-  .eyebrow{
-    font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-    color: var(--ink-dim);
-    margin: 0 0 0.7rem;
-  }
-  h1.display{
-    font-weight: 800;
-    font-size: clamp(2.1rem, 4.6vw, 3.6rem);
-    line-height: 1.05;
-    letter-spacing: -0.02em;
-    text-wrap: balance;
-    margin: 0 0 1rem;
-    max-width: 18ch;
-  }
-  h2.display{
-    font-weight: 800;
-    font-size: clamp(1.6rem, 3.3vw, 2.4rem);
-    line-height: 1.1;
-    letter-spacing: -0.015em;
-    text-wrap: balance;
-    margin: 0 0 1.1rem;
-    max-width: 24ch;
-  }
-  p.lede{
-    font-size: clamp(1rem, 1.25vw, 1.15rem);
-    line-height: 1.55;
-    color: var(--ink-dim);
-    max-width: 62ch;
-    margin: 0 0 1.2rem;
-  }
+  /* Bildtexten: en rad ovanför skissen, mer behövs inte. */
+  .caption{ flex: 0 0 auto; display:flex; align-items:baseline; gap: 0.8rem; flex-wrap: wrap; }
+  .caption h2{ margin:0; font-size: clamp(1.2rem, 2vw, 1.6rem); font-weight: 800; letter-spacing: -0.01em; }
+  .caption p{ margin:0; font-size: 0.95rem; color: var(--ink-dim); max-width: 70ch; }
 
-  .finding-list{ list-style:none; margin:0 0 1.3rem; padding:0; max-width: 48rem; }
-  .finding-list li{
-    display:flex; gap: 0.8rem; align-items:flex-start;
-    padding: 0.65rem 0; border-top: 1px solid var(--line-soft);
-    font-size: 1rem; line-height:1.5;
-  }
-  .finding-list li:last-child{ border-bottom: 1px solid var(--line-soft); }
-  .sev{ flex: 0 0 auto; width: 0.6rem; height: 0.6rem; border-radius: 50%; background: var(--critical); margin-top: 0.5rem; }
-  .finding-list b{ font-weight:800; }
-
-  .decision{
-    margin: 0 0 1.3rem;
-    padding: 0.1rem 0 0.1rem 1.2rem;
-    border-left: 5px solid var(--positive);
-    font-weight: 800;
-    font-size: clamp(1.2rem, 2.1vw, 1.6rem);
-    line-height:1.35;
-    max-width: 34ch;
-  }
-
-  /* Flödet: steg i ordning, därför numrerade. */
-  .flow{
-    list-style:none; margin: 0 0 1.2rem; padding:0;
-    display:grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 0.8rem;
-    max-width: 68rem; counter-reset: step;
-  }
-  .flow li{
-    counter-increment: step;
-    border: 1.5px solid var(--line);
-    border-radius: 1rem;
-    padding: 1rem 1.1rem;
-    min-width: 0;
-  }
-  .flow li::before{
-    content: counter(step);
-    display:inline-flex; align-items:center; justify-content:center;
-    width: 1.7rem; height: 1.7rem; border-radius: 50%;
-    background: var(--ink); color: var(--bg);
-    font-weight: 800; font-size: 0.85rem;
-    margin-bottom: 0.6rem;
-  }
-  .flow h3{ margin: 0 0 0.35rem; font-size: 1rem; font-weight: 800; }
-  .flow p{ margin: 0; font-size: 0.9rem; line-height: 1.45; color: var(--ink-dim); }
-  .flow .skip{ display:block; margin-top: 0.5rem; font-size: 0.8rem; font-weight: 700; color: var(--positive); }
-
-  .closing-list{ list-style:none; margin:0 0 1.2rem; padding:0; max-width: 46rem; }
-  .closing-list li{ padding: 0.5rem 0 0.5rem 1.6rem; position:relative; font-size: 1.05rem; line-height:1.5; }
-  .closing-list li::before{
-    content: ""; position:absolute; left:0; top:0.9rem;
-    width:0.6rem; height:3px; border-radius: 2px; background: var(--positive);
-  }
-
-  .todo{ list-style:none; margin:0 0 1.3rem; padding:0; max-width: 48rem; }
-  .todo li{
-    position:relative; padding: 0.55rem 0 0.55rem 1.7rem;
-    font-size: 1rem; line-height:1.5; border-top: 1px solid var(--line-soft);
-  }
-  .todo li:last-child{ border-bottom: 1px solid var(--line-soft); }
-  .todo li::before{
-    content: "□"; position:absolute; left:0; top:0.5rem;
-    font-weight: 800; color: var(--ink-dim);
-  }
-
-  /* Skisser av bannern: ett förenklat webbläsarfönster med en vit sida. */
-  .mock-row{ display:flex; gap: 2rem; align-items:flex-start; flex-wrap: wrap; }
-  .mock-notes{ flex: 1 1 18rem; min-width: 0; }
+  /* Webbläsarfönstret fyller resten av bilden; sidan i det scrollar. */
   .browser{
-    flex: 1 1 30rem; min-width: 0; max-width: 40rem;
+    flex: 1 1 auto; min-height: 0;
+    width: 100%; max-width: 64rem; margin: 0 auto;
+    display:flex; flex-direction:column;
     border-radius: 0.8rem;
-    background: var(--page);
-    color: var(--page-ink);
-    box-shadow: 0 1px 0 var(--line), 0 12px 30px rgba(35,35,38,0.16);
+    background: var(--page); color: var(--page-ink);
+    box-shadow: 0 1px 0 var(--line), 0 14px 34px rgba(35,35,38,0.18);
     overflow: hidden;
   }
   .browser-top{
-    display:flex; align-items:center; gap: 0.6rem;
-    padding: 0.55rem 0.8rem;
-    background: #EDEBE3;
+    flex: 0 0 auto;
+    display:flex; align-items:center; gap: 0.7rem;
+    padding: 0.55rem 0.9rem;
+    background: var(--chrome);
     border-bottom: 1px solid var(--page-line);
   }
   .browser-top .dots{ display:flex; gap: 0.35rem; }
-  .browser-top .dots span{ width: 0.6rem; height: 0.6rem; border-radius: 50%; background: #C9C6BA; display:block; }
+  .browser-top .dots span{ width: 0.65rem; height: 0.65rem; border-radius: 50%; background: #C9C6BA; display:block; }
   .browser-top .addr{
     flex: 1 1 auto; min-width: 0;
-    font-size: 0.75rem; color: #5B5850;
-    background: var(--page); border-radius: 0.4rem; padding: 0.25rem 0.6rem;
+    font-size: 0.8rem; color: #5B5850;
+    background: var(--page); border-radius: 0.4rem; padding: 0.3rem 0.7rem;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .page{ padding: 0 1.3rem 1.3rem; font-size: 0.88rem; line-height: 1.45; }
+  .viewport{ flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+
+  /* Sidan i proxyn, så som användaren ser den. */
+  .page{ max-width: 40rem; margin: 0 auto; padding: 0 1.2rem 2rem; font-size: 1rem; line-height: 1.5; }
+  .page.wide{ max-width: 52rem; }
   .page-head{
     display:flex; justify-content: space-between; align-items: baseline; gap: 1rem;
-    padding: 0.8rem 0; border-bottom: 4px solid var(--lnu-yellow); margin-bottom: 1rem;
+    padding: 1rem 0; border-bottom: 4px solid var(--lnu-yellow); margin-bottom: 1.4rem;
   }
-  .page-head b{ font-size: 0.9rem; }
-  .page-head span{ font-size: 0.78rem; text-decoration: underline; }
-  .page h4{ margin: 0 0 0.5rem; font-size: 1.35rem; line-height: 1.15; }
-  .page p{ margin: 0 0 0.8rem; }
+  .page-head b{ font-size: 1rem; }
+  .page-head a{ color: var(--page-ink); font-size: 0.9rem; }
+  .page h1{ margin: 0 0 0.6rem; font-size: 2rem; line-height: 1.15; text-wrap: balance; }
+  .page p{ margin: 0 0 1rem; }
+  .page a{ color: var(--page-ink); }
+  .fields{ display:flex; flex-wrap: wrap; gap: 1rem; margin: 0.4rem 0 1.2rem; }
+  .fields label{ flex: 1 1 12rem; display:flex; flex-direction:column; gap: 0.35rem; font-weight: 700; font-size: 0.95rem; }
+  .fields input{
+    font: inherit; font-size: 1.2rem; font-weight: 400; letter-spacing: 0.15em;
+    padding: 0.55rem 0.7rem; min-height: 2.8rem;
+    border: 1px solid #8A877A; border-radius: 0.4rem; background: var(--page); color: var(--page-ink);
+  }
+  .page details{ margin: 0 0 0.4rem; }
+  .page summary{ cursor: pointer; font-weight: 700; }
   .terms{
-    border: 1px solid var(--page-line); border-radius: 0.4rem;
-    background: var(--page-soft);
-    padding: 0.6rem 0.9rem; max-height: 9.5rem; overflow: hidden;
-    font-size: 0.78rem; color: #3D3B35;
-    -webkit-mask-image: linear-gradient(#000 70%, transparent);
-            mask-image: linear-gradient(#000 70%, transparent);
+    margin-top: 0.6rem;
+    border: 1px solid var(--page-line); border-radius: 0.4rem; background: var(--page-soft);
+    padding: 0.3rem 1rem 0.8rem; font-size: 0.88rem; line-height: 1.5; color: #3D3B35;
   }
-  .terms strong{ display:block; margin-bottom: 0.3rem; }
-  .terms ol{ margin: 0.3rem 0; padding-left: 1.1rem; }
-  .page-actions{ display:flex; justify-content:flex-end; align-items:center; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; }
-  .page-actions .link{ text-decoration: underline; font-size: 0.85rem; }
-  .page-actions .btn{
+  .terms h2{ font-size: 1.05rem; margin: 0.7rem 0 0.3rem; }
+  .terms h3{ font-size: 0.95rem; margin: 0.7rem 0 0.2rem; }
+  .terms ol{ margin: 0; padding-left: 1.2rem; }
+  .page-error{ color: var(--error); font-weight: 700; margin: 0.6rem 0 0; min-height: 1.5em; }
+  .page-actions{ display:flex; justify-content:flex-end; align-items:center; gap: 1.5rem; flex-wrap: wrap; margin-top: 0.8rem; }
+  .page-actions.center{ flex-direction: column; justify-content: center; gap: 0.6rem; }
+  .page-btn{
+    font: inherit; font-weight: 800; font-size: 1.05rem;
     background: var(--button); color: var(--lnu-yellow);
-    font-weight: 800; font-size: 0.85rem; padding: 0.55rem 0.9rem; border-radius: 0.35rem;
+    border: 0; border-radius: 0.4rem; padding: 0.7rem 1.3rem; min-height: 2.8rem; cursor: pointer;
   }
-  .fields{ display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0.7rem; margin-bottom: 0.9rem; }
-  .field{ display:flex; flex-direction:column; gap: 0.25rem; font-weight: 700; font-size: 0.78rem; }
-  .field span.input{
-    display:block; border: 1px solid #8A877A; border-radius: 0.35rem;
-    padding: 0.4rem 0.6rem; font-weight: 400; font-size: 0.95rem; letter-spacing: 0.2em; min-height: 2rem;
-  }
-  .radio{ display:flex; align-items:center; gap: 0.5rem; margin: 0.35rem 0; font-size: 0.85rem; }
-  .radio i{
-    width: 0.95rem; height: 0.95rem; border-radius: 50%; border: 2px solid #5B5850; display:inline-block; flex: 0 0 auto;
-  }
-  .radio i.on{ border-color: var(--button); box-shadow: inset 0 0 0 3px var(--page), inset 0 0 0 10px var(--button); }
-  .page h5{ margin: 0.9rem 0 0.3rem; font-size: 1rem; }
+  .page-btn:hover{ background: var(--lnu-yellow); color: var(--button); }
+  .page-link{ font: inherit; background: none; border: 0; padding: 0.3rem; color: var(--page-ink); text-decoration: underline; cursor: pointer; }
+  .today-intro{ font-style: italic; text-align: center; }
+  .today-terms{ font-size: 0.92rem; }
+  .today-terms h2{ text-align: center; font-size: 1.4rem; margin: 0.4rem 0 0.8rem; }
+  .today-terms h3{ font-size: 1.05rem; margin: 1rem 0 0.3rem; }
+  .today-terms ol{ margin: 0; padding-left: 1.3rem; }
+  .today-btn{ display:inline-block; background: #333333; color: var(--lnu-yellow); font-weight: 800; padding: 0.6rem 1.2rem; border-radius: 0.3rem; }
+
+  .waiting{ display:flex; align-items:center; gap: 1rem; margin: 3rem 0 1.2rem; }
+  .waiting p{ margin: 0; font-size: 1.4rem; font-weight: 700; }
+  .spinner{ width: 2.4rem; height: 2.4rem; border-radius: 50%; border: 5px solid #E8E5D8; border-top-color: var(--button); animation: spin 1s linear infinite; flex: 0 0 auto; }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce){ .spinner{ animation: none; } }
+
+  .resource{ padding: 3rem 1.5rem; text-align: center; color: #5B5850; }
+  .resource p{ margin: 0 0 0.6rem; }
+  .resource .big{ font-size: 1.5rem; font-weight: 800; color: var(--page-ink); }
+
+  .again{ margin-top: 1.4rem; font-size: 0.9rem; }
 
   footer.nav{
     flex: 0 0 auto;
     display:flex; align-items:center; justify-content: space-between; gap: 1rem;
-    padding-top: 0.8rem;
+    padding-top: 0.7rem;
     border-top: 1px solid var(--line);
   }
   .nav-btns{ display:flex; gap:0.6rem; }
@@ -286,7 +175,6 @@
     font-family: inherit; font-weight: 700; font-size: 0.85rem;
     background: none; border: 1.5px solid var(--line); color: var(--ink);
     padding: 0.5rem 1rem; border-radius: 0.6rem; cursor:pointer;
-    transition: background .15s ease, opacity .15s ease;
   }
   .nav-btn:hover{ background: rgba(255,255,255,0.35); }
   .nav-btn:disabled{ opacity:0.3; cursor:default; }
@@ -298,13 +186,9 @@
 
   :focus-visible{ outline: 3px solid var(--ink); outline-offset: 2px; border-radius: 4px; }
 
-  @media (max-width: 900px){
-    .flow{ grid-template-columns: repeat(2, minmax(0,1fr)); }
-  }
   @media (max-width: 720px){
-    .flow{ grid-template-columns: 1fr; }
-    .fields{ grid-template-columns: 1fr; }
     .hint{ display:none; }
+    .page h1{ font-size: 1.6rem; }
   }
 </style>
 </head>
@@ -314,150 +198,135 @@
   <div class="bar">
     <div class="bar-left">
       <span class="kicker" id="barKicker">Kicker</span>
-      <span class="brand">Lånekonto via EZproxy</span>
+      <span class="brand">PIN-kod via EZproxy</span>
     </div>
-    <span class="count" id="barCount">1 / 8</span>
+    <span class="count" id="barCount">1 / 4</span>
   </div>
   <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
 
   <main id="slides">
 
-    <section class="slide" data-kicker="Förslag &ndash; oktober 2026">
-      <p class="eyebrow">Universitetsbiblioteket</p>
-      <h1 class="display">Lånekonto via EZproxy, med egen PIN-kod</h1>
-      <p class="lede">Ett förslag på hur proxyn kan fortsätta skapa lånekonton, men där användaren själv väljer om hen vill ha ett konto och vilken PIN-kod det ska ha.</p>
-    </section>
-
-    <section class="slide" data-kicker="Skiss: i dag" hidden>
-      <div class="mock-row">
-        <div class="mock-notes">
-          <p class="eyebrow">Så ser det ut i dag</p>
-          <h2 class="display">Villkoren, och sedan ett konto</h2>
-          <ul class="finding-list">
-            <li><span class="sev" aria-hidden="true"></span><span>Sidan frågar inte om användaren vill ha ett lånekonto. Den säger att man behöver följa villkoren för att använda e-resurserna.</span></li>
-            <li><span class="sev" aria-hidden="true"></span><span>Klick på knappen skapar lånekontot direkt, med en slumpad PIN-kod.</span></li>
-            <li><span class="sev" aria-hidden="true"></span><span>PIN-koden kommer sedan i välkomstmejlet från Alma, i klartext.</span></li>
-          </ul>
-        </div>
-        <div class="browser" role="img" aria-label="Skiss av dagens sida med villkor i proxyn">
-          <div class="browser-top"><div class="dots" aria-hidden="true"><span></span><span></span><span></span></div><div class="addr">login.proxy.lnu.se</div></div>
-          <div class="page">
-            <p style="margin-top: 1rem"><i>När du använder bibliotekets e-resurser behöver du följa villkoren nedan. <u>Click here for English</u>.</i></p>
-            <h4>Villkor för användning av universitetsbibliotekets resurser vid Lnu</h4>
-            <div class="terms">
-              Genom universitetsbiblioteket får du tillgång till resurser som samtidigt innebär ett ansvar att följa bibliotekets bestämmelser kring användandet av dessa resurser.
-              <strong style="margin-top: 0.5rem">Användning av bibliotekets elektroniska resurser</strong>
-              <ol><li>Utskrift och nedladdning endast för personligt, icke-kommersiellt studie- eller forskningssyfte.</li><li>Enstaka artiklar, kapitel eller kortare avsnitt får sparas för eget bruk.</li></ol>
-              <strong>Användning av bibliotekets fysiska resurser</strong>
-              <ol><li>Du är ansvarig för alla lån som görs med ditt bibliotekskonto/lånekort.</li></ol>
+    <section class="slide" data-kicker="Skiss &ndash; oktober 2026">
+      <div class="caption">
+        <h2>I dag</h2>
+        <p>Lnu-användare utan konto möter den här sidan när de loggar in i proxyn. Klick på knappen skapar ett konto med en slumpad PIN-kod, som sedan kommer i välkomstmejlet från Alma.</p>
+      </div>
+      <div class="browser" role="img" aria-label="Skiss av dagens sida i proxyn: villkoren, länken Avvisa och knappen Jag har läst och förstått villkoren">
+        <div class="browser-top"><div class="dots" aria-hidden="true"><span></span><span></span><span></span></div><div class="addr">login.proxy.lnu.se</div></div>
+        <div class="viewport">
+          <div class="page wide">
+            <p class="today-intro" style="margin-top: 1.4rem">När du använder bibliotekets e-resurser behöver du följa villkoren nedan. <u>Click here for English</u>.</p>
+            <div class="today-terms">
+              <h2>Villkor för användning av universitetsbibliotekets resurser vid Lnu</h2>
+              <p>Genom universitetsbiblioteket får du tillgång till resurser som samtidigt innebär ett ansvar att följa bibliotekets bestämmelser kring användandet av dessa resurser.</p>
+              <h3>Användning av bibliotekets elektroniska resurser</h3>
+              <ol>
+                <li>För samtliga elektroniska resurser gäller att utskrift och nedladdning endast får göras för personligt, icke-kommersiellt studie- eller forskningssyfte.</li>
+                <li>Det är i allmänhet tillåtet att spara och skriva ut enstaka artiklar, kapitel eller kortare avsnitt för eget bruk. Att spara ned större kvantiteter som till exempel ett helt tidskriftsnummer är inte tillåtet.</li>
+                <li>Forskare har, i vetenskapligt syfte, i allmänhet rätt att dela med sig av enstaka artiklar, kapitel eller kortare avsnitt till kollegor vid andra organisationer.</li>
+              </ol>
+              <h3>Användning av bibliotekets fysiska resurser</h3>
+              <ol>
+                <li>Du är ansvarig för alla lån som görs med ditt bibliotekskonto/lånekort.</li>
+                <li>Du förväntas informera dig om ändringar i lånehanteringen samt hålla dina personuppgifter uppdaterade.</li>
+                <li>Du hämtar själv ut dina reserverade böcker från speciell reservationshylla.</li>
+                <li>Det är ditt ansvar att bevaka statusen på dina lån, såsom återlämningsdatum och att samtliga lån blir avregistrerade vid återlämning.</li>
+                <li>Det är förseningsavgift på lån som lämnas tillbaka efter angivet återlämningsdatum.</li>
+                <li>Har du skuld till biblioteket kan ditt bibliotekskonto spärras.</li>
+              </ol>
             </div>
-            <div class="page-actions" style="justify-content: center"><span class="link">Avvisa</span><span class="btn">Jag har läst och förstått villkoren</span></div>
+            <div class="page-actions center" style="margin-top: 1.6rem">
+              <u>Avvisa</u>
+              <span class="today-btn">Jag har läst och förstått villkoren</span>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="slide" data-kicker="Beslut" hidden>
-      <p class="eyebrow">Det vi kom fram till</p>
-      <h2 class="display">Kontoskapandet blir kvar i proxyn</h2>
-      <p class="decision">Men med ett aktivt val: användaren väljer själv att skapa kontot, och väljer själv sin PIN-kod.</p>
-      <p class="lede">Ingen PIN-kod slumpas och ingen PIN-kod mejlas. Den som bara vill läsa e-resurser kan fortsätta utan lånekonto.</p>
-    </section>
-
-    <section class="slide" data-kicker="Flödet" hidden>
-      <p class="eyebrow">Steg för steg</p>
-      <h2 class="display">Vad användaren möter efter inloggning i proxyn</h2>
-      <ol class="flow">
-        <li><h3>Inloggning</h3><p>Användaren loggar in i proxyn som vanligt, med sitt Lnu-konto.</p></li>
-        <li><h3>Finns konto med PIN-kod?</h3><p>Har användaren redan ett lånekonto med PIN-kod går hen direkt till e-resursen.</p></li>
-        <li><h3>Villkoren</h3><p>Annars visas frågan om lånekonto och villkoren.</p><span class="skip">Fortsätt utan lånekonto</span></li>
-        <li><h3>PIN-kod och e-post</h3><p>Användaren väljer PIN-kod och var påminnelser ska skickas.</p><span class="skip">Fortsätt utan lånekonto</span></li>
-        <li><h3>Vidare</h3><p>Kontot skapas, och användaren skickas vidare till e-resursen.</p></li>
-      </ol>
-      <p class="lede">Om bibliotekets system inte svarar går användaren direkt vidare. Inloggningen till e-resurserna stoppas aldrig.</p>
-    </section>
-
-    <section class="slide" data-kicker="Skiss: villkoren" hidden>
-      <div class="mock-row">
-        <div class="mock-notes">
-          <p class="eyebrow">Steg 3</p>
-          <h2 class="display">Frågan och villkoren</h2>
-          <ul class="closing-list">
-            <li>Det framgår direkt att e-resurserna fungerar utan lånekonto.</li>
-            <li>Villkoren hämtas från samma ställe som i account och Primo, så texten är alltid densamma.</li>
-            <li>Hela sidan finns också på engelska.</li>
-          </ul>
-        </div>
-        <div class="browser" role="img" aria-label="Skiss av sidan med frågan om lånekonto och villkoren">
-          <div class="browser-top"><div class="dots" aria-hidden="true"><span></span><span></span><span></span></div><div class="addr">login.proxy.lnu.se</div></div>
-          <div class="page">
-            <div class="page-head"><b>Universitetsbiblioteket</b><span>In English</span></div>
-            <h4>Vill du skapa ett lånekonto?</h4>
-            <p>Du behöver inget lånekonto för att använda bibliotekets e-resurser. Med ett lånekonto kan du också låna böcker, till exempel i utlåningsautomaterna. Då behöver du godkänna villkoren och välja en PIN-kod.</p>
-            <div class="terms">
-              <strong>Villkor för användning av universitetsbibliotekets resurser vid Lnu</strong>
-              Användning av bibliotekets elektroniska resurser
-              <ol><li>Utskrift och nedladdning endast för personligt, icke-kommersiellt studie- eller forskningssyfte.</li><li>Enstaka artiklar, kapitel eller kortare avsnitt får sparas för eget bruk.</li></ol>
-              Användning av bibliotekets fysiska resurser
-              <ol><li>Du är ansvarig för alla lån som görs med ditt bibliotekskonto/lånekort.</li><li>Du förväntas hålla dina personuppgifter uppdaterade.</li></ol>
-            </div>
-            <div class="page-actions"><span class="link">Fortsätt utan lånekonto</span><span class="btn">Jag har läst och förstått villkoren</span></div>
-          </div>
-        </div>
+    <section class="slide" data-kicker="Skiss: förslaget" hidden>
+      <div class="caption">
+        <h2>Förslaget</h2>
+        <p>Visas bara för Lnu-användare som saknar PIN-kod. Prova gärna: fyll i en PIN-kod, eller fortsätt utan.</p>
       </div>
-    </section>
-
-    <section class="slide" data-kicker="Skiss: PIN-kod och e-post" hidden>
-      <div class="mock-row">
-        <div class="mock-notes">
-          <p class="eyebrow">Steg 4</p>
-          <h2 class="display">Användaren väljer PIN-kod</h2>
-          <ul class="closing-list">
-            <li>PIN-koden skrivs två gånger, så att felskrivningar fångas direkt.</li>
-            <li>Påminnelser går till Lnu-adressen, eller till en annan adress som också skrivs två gånger.</li>
-            <li>Först när användaren klickar på Skapa lånekonto skapas kontot.</li>
-          </ul>
-        </div>
-        <div class="browser" role="img" aria-label="Skiss av sidan där användaren väljer PIN-kod och e-postadress">
-          <div class="browser-top"><div class="dots" aria-hidden="true"><span></span><span></span><span></span></div><div class="addr">login.proxy.lnu.se</div></div>
-          <div class="page">
-            <div class="page-head"><b>Universitetsbiblioteket</b><span>In English</span></div>
-            <h4>Välj en PIN-kod</h4>
-            <p>PIN-koden använder du i utlåningsautomaterna, tillsammans med ditt personnummer eller Lnu-kort.</p>
+      <div class="browser">
+        <div class="browser-top"><div class="dots" aria-hidden="true"><span></span><span></span><span></span></div><div class="addr">login.proxy.lnu.se</div></div>
+        <div class="viewport">
+          <form class="page" id="pinForm" novalidate autocomplete="off">
+            <div class="page-head"><b>Universitetsbiblioteket</b><a href="#" onclick="return false">In English</a></div>
+            <h1>Vill du kunna låna böcker?</h1>
+            <p>Med en PIN-kod kan du låna i utlåningsautomaterna med ditt personnummer eller Lnu-kort. För e-resurserna behöver du ingen PIN-kod.</p>
             <div class="fields">
-              <div class="field">PIN-kod (4 siffror)<span class="input">••••</span></div>
-              <div class="field">Bekräfta PIN-kod<span class="input">••••</span></div>
+              <label for="pin">PIN-kod (4 siffror)
+                <input id="pin" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password"></label>
+              <label for="confirm-pin">Bekräfta PIN-kod
+                <input id="confirm-pin" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password"></label>
             </div>
-            <h5>Vart ska vi skicka påminnelser om lån?</h5>
-            <div class="radio"><i class="on" aria-hidden="true"></i>abc123xy@student.lnu.se</div>
-            <div class="radio"><i aria-hidden="true"></i>Till en annan e-postadress</div>
-            <div class="page-actions"><span class="link">Fortsätt utan lånekonto</span><span class="btn">Skapa lånekonto</span></div>
-          </div>
+            <details>
+              <summary>När du skapar en PIN-kod godkänner du bibliotekets villkor. Visa villkoren</summary>
+              <div class="terms">
+                <h2>Villkor för användning av universitetsbibliotekets resurser vid Lnu</h2>
+                <p>Genom universitetsbiblioteket får du tillgång till resurser som samtidigt innebär ett ansvar att följa bibliotekets bestämmelser kring användandet av dessa resurser.</p>
+                <h3>Användning av bibliotekets elektroniska resurser</h3>
+                <ol>
+                  <li>För samtliga elektroniska resurser gäller att utskrift och nedladdning endast får göras för personligt, icke-kommersiellt studie- eller forskningssyfte.</li>
+                  <li>Det är i allmänhet tillåtet att spara och skriva ut enstaka artiklar, kapitel eller kortare avsnitt för eget bruk. Att spara ned större kvantiteter som till exempel ett helt tidskriftsnummer är inte tillåtet.</li>
+                  <li>Forskare har, i vetenskapligt syfte, i allmänhet rätt att dela med sig av enstaka artiklar, kapitel eller kortare avsnitt till kollegor vid andra organisationer.</li>
+                </ol>
+                <h3>Användning av bibliotekets fysiska resurser</h3>
+                <ol>
+                  <li>Du är ansvarig för alla lån som görs med ditt bibliotekskonto/lånekort.</li>
+                  <li>Du förväntas informera dig om ändringar i lånehanteringen samt hålla dina personuppgifter uppdaterade.</li>
+                  <li>Du hämtar själv ut dina reserverade böcker från speciell reservationshylla.</li>
+                  <li>Det är ditt ansvar att bevaka statusen på dina lån, såsom återlämningsdatum och att samtliga lån blir avregistrerade vid återlämning.</li>
+                  <li>Det är förseningsavgift på lån som lämnas tillbaka efter angivet återlämningsdatum.</li>
+                  <li>Har du skuld till biblioteket kan ditt bibliotekskonto spärras.</li>
+                </ol>
+              </div>
+            </details>
+            <p class="page-error" id="pinError" role="alert"></p>
+            <div class="page-actions">
+              <button class="page-link" type="button" id="skipBtn">Fortsätt utan PIN-kod</button>
+              <button class="page-btn" type="submit">Skapa PIN-kod</button>
+            </div>
+          </form>
         </div>
       </div>
     </section>
 
-    <section class="slide" data-kicker="Vad som blir bättre" hidden>
-      <p class="eyebrow">Jämfört med i dag</p>
-      <h2 class="display">Samma kontoskapande, utan PIN-koder i mejl</h2>
-      <ul class="closing-list">
-        <li>Användaren väljer själv sin PIN-kod, en kod hen faktiskt kommer ihåg.</li>
-        <li>Ingen PIN-kod skickas med e-post, varken från proxyn eller från Alma.</li>
-        <li>Inget lånekonto skapas förrän användaren aktivt väljer det.</li>
-        <li>Samma villkor och samma formulär som i account och Primo. Godkännandet sparas tillsammans med vilken version av villkoren som godkändes.</li>
-        <li>Proxyn och bibliotekets system pratar med varandra på ett säkrare sätt än i dag: inga hemligheter i versionshanteringen, och varje anrop gäller bara en kort stund.</li>
-      </ul>
+    <section class="slide" data-kicker="Skiss: efter Skapa PIN-kod" hidden>
+      <div class="caption">
+        <h2>Efter Skapa PIN-kod</h2>
+        <p>Först nu skapas kontot. PIN-koden mejlas aldrig, användaren har just valt den själv.</p>
+      </div>
+      <div class="browser" role="img" aria-label="Skiss av sidan som visas medan PIN-koden sparas">
+        <div class="browser-top"><div class="dots" aria-hidden="true"><span></span><span></span><span></span></div><div class="addr">login.proxy.lnu.se</div></div>
+        <div class="viewport">
+          <div class="page">
+            <div class="page-head"><b>Universitetsbiblioteket</b></div>
+            <div class="waiting"><span class="spinner" aria-hidden="true"></span><p>Sparar din PIN-kod …</p></div>
+            <p>Sedan skickas du direkt vidare till e-resursen du var på väg till. Nästa gång du lånar i en utlåningsautomat använder du ditt personnummer eller Lnu-kort och PIN-koden du valde.</p>
+          </div>
+        </div>
+      </div>
+      <p class="again"><button class="page-link" type="button" data-goto="1">← Tillbaka till förslaget</button></p>
     </section>
 
-    <section class="slide" data-kicker="Nästa steg" hidden>
-      <p class="eyebrow">Om förslaget godkänns</p>
-      <h2 class="display">Det här återstår</h2>
-      <ul class="todo">
-        <li>Bygga stödet för proxyn i bibliotekets kontotjänst och koppla in den nya sidan.</li>
-        <li>Testa hela flödet i testmiljön, med testkonton.</li>
-        <li>Ta bort PIN-koden ur Almas välkomstbrev när proxyn, Primo och account inte längre slumpar fram koder.</li>
-        <li>Följa upp efter några veckor: hur många skapar konto, och hur många fortsätter utan?</li>
-      </ul>
+    <section class="slide" data-kicker="Skiss: fortsätt utan PIN-kod" hidden>
+      <div class="caption">
+        <h2>Fortsätt utan PIN-kod</h2>
+        <p>Användaren kommer direkt till e-resursen. Inget konto skapas, och frågan kommer igen vid nästa inloggning i proxyn.</p>
+      </div>
+      <div class="browser" role="img" aria-label="Skiss: e-resursen öppnas direkt">
+        <div class="browser-top"><div class="dots" aria-hidden="true"><span></span><span></span><span></span></div><div class="addr">e-resursen, via proxyn</div></div>
+        <div class="viewport">
+          <div class="resource">
+            <p class="big">E-resursen öppnas</p>
+            <p>Precis som när man loggar in i proxyn i dag.</p>
+          </div>
+        </div>
+      </div>
+      <p class="again"><button class="page-link" type="button" data-goto="1">← Tillbaka till förslaget</button></p>
     </section>
 
   </main>
@@ -468,7 +337,7 @@
       <button class="nav-btn" id="nextBtn" type="button">Nästa →</button>
     </div>
     <div class="dots-nav" id="dotsNav"></div>
-    <span class="hint">← → eller mellanslag för att navigera</span>
+    <span class="hint">← → för att bläddra</span>
   </footer>
 </div>
 
@@ -505,11 +374,12 @@
     prevBtn.disabled = current === 0;
     nextBtn.disabled = current === total - 1;
     dots.forEach((d, idx) => d.setAttribute('aria-current', idx === current ? 'true' : 'false'));
-    slides[current].scrollTop = 0;
-    // Flytta fokus till den nya bildens rubrik, så att tangentbords- och
+    const viewport = slides[current].querySelector('.viewport');
+    if (viewport) viewport.scrollTop = 0;
+    // Flytta fokus till bildens rubrik, så att tangentbords- och
     // skärmläsaranvändare får veta att innehållet bytts.
     if (moveFocus){
-      const heading = slides[current].querySelector('h1, h2');
+      const heading = slides[current].querySelector('h2');
       if (heading){
         if (!heading.hasAttribute('tabindex')) heading.setAttribute('tabindex', '-1');
         heading.focus();
@@ -519,10 +389,34 @@
 
   prevBtn.addEventListener('click', () => goTo(current - 1));
   nextBtn.addEventListener('click', () => goTo(current + 1));
+  document.querySelectorAll('[data-goto]').forEach((btn) => {
+    btn.addEventListener('click', () => goTo(Number(btn.dataset.goto)));
+  });
 
+  // Förslaget går att prova: samma kontroller som i den riktiga sidan.
+  const pinForm = document.getElementById('pinForm');
+  const pinError = document.getElementById('pinError');
+  pinForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const pin = document.getElementById('pin').value;
+    const confirmPin = document.getElementById('confirm-pin').value;
+    if (!/^\d{4}$/.test(pin)){
+      pinError.textContent = 'PIN-koden ska bestå av fyra siffror.';
+      return;
+    }
+    if (pin !== confirmPin){
+      pinError.textContent = 'PIN-koderna stämmer inte överens.';
+      return;
+    }
+    pinError.textContent = '';
+    goTo(2);
+  });
+  document.getElementById('skipBtn').addEventListener('click', () => goTo(3));
+
+  // Piltangenterna bläddrar, utom när man skriver i ett fält.
   document.addEventListener('keydown', (e) => {
     if (e.target.closest('input, textarea, select')) return;
-    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' '){
+    if (e.key === 'ArrowRight' || e.key === 'PageDown'){
       e.preventDefault(); goTo(current + 1);
     } else if (e.key === 'ArrowLeft' || e.key === 'PageUp'){
       e.preventDefault(); goTo(current - 1);
