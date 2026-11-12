@@ -139,7 +139,7 @@
   .page ol.eres{ margin: 0 0 0.4rem; padding-left: 1.3rem; display:flex; flex-direction:column; gap: 0.4rem; }
   .divider{ border: 0; border-top: 1px solid var(--page-line); margin: 1.6rem 0 1.2rem; }
   .page-h2{ margin: 0 0 0.5rem; font-size: 1.45rem; line-height: 1.2; }
-  .consent{ display:flex; align-items:flex-start; gap: 0.6rem; font-weight: 700; margin: 0.4rem 0 0; cursor: pointer; }
+  .consent{ display:flex; align-items:flex-start; gap: 0.6rem; font-weight: 700; font-size: 1rem; color: var(--page-ink); margin: 0.9rem 0 0; padding-top: 0.8rem; border-top: 1px solid var(--page-line); cursor: pointer; }
   .consent input{ width: 1.3rem; height: 1.3rem; margin: 0.1rem 0 0; flex: 0 0 auto; accent-color: var(--button); cursor: pointer; }
   .both-continue{ margin: 1rem 0 0 !important; font-size: 0.95rem; color: #3D3B35; }
   .page-btn.secondary{ background: var(--page); color: var(--button); border: 2px solid var(--button); }
@@ -255,7 +255,7 @@
     <section class="slide" data-kicker="Skiss: förslaget" hidden>
       <div class="caption">
         <h2>Förslaget</h2>
-        <p>Reglerna för e-resurser visas öppet, som information. Lånereglerna fälls ut när man börjar skriva en PIN-kod och godkänns aktivt med en kryssruta. Båda knapparna leder vidare till e-resursen. Prova gärna.</p>
+        <p>Reglerna för e-resurser visas öppet, som information. Lånereglerna fälls ut när man börjar skriva en PIN-kod och godkänns aktivt med en kryssruta under dem. Båda knapparna leder vidare till e-resursen. Prova gärna.</p>
       </div>
       <div class="browser">
         <div class="browser-top"><div class="dots" aria-hidden="true"><span></span><span></span><span></span></div><div class="addr">login.proxy.lnu.se</div></div>
@@ -291,9 +291,9 @@
                   <li>Har du skuld till biblioteket kan ditt bibliotekskonto spärras.</li>
                 </ol>
                 <p style="margin: 0.6rem 0 0">Detaljerade lånebestämmelser finns på lnu.se.</p>
+                <label class="consent" for="acceptRules"><input type="checkbox" id="acceptRules"> Jag har läst och godkänner lånereglerna</label>
               </div>
             </details>
-            <label class="consent" for="acceptRules"><input type="checkbox" id="acceptRules"> Jag har läst och godkänner lånereglerna</label>
             <p class="page-error" id="pinError" role="alert"></p>
             <p class="both-continue">Oavsett vilken knapp du väljer kommer du vidare till e-resursen.</p>
             <div class="page-actions">
